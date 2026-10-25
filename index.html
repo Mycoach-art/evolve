@@ -1507,11 +1507,11 @@ const stepsTime=st=>st.reduce((a,s)=>a+s.dur+3,0);
 const progOf={mobilite:"flow",etirements:"soir",souplessePlus:"avance",dos:"dos"};
 const FIGCOL={near:"var(--fig-near)",far:"var(--fig-far)",hl:"var(--accent)",hlFar:"var(--fig-hl-far)",ground:"var(--line)"};
 /* Illustrations 3D : une image par mouvement ; deux images = alternance au rythme du mouvement */
-const MOB_TALL=new Set(["x-cou","x-bras","x-chat","x-vache","x-hanches","s-kickav","s-kicklat","x-kickarr","x-thoracique","x-wgs","x-squat","x-birddog","x-sidebridge","x-sidebridgek","x-curlup","s2-pincedebout","s2-canape","s2-demiecart","s2-lezard","s2-pigeon","s2-papillon","s2-pancake","s2-pinceassise"]);
+const MOB_TALL=new Set(["x-cou","x-bras","x-chat","x-vache","x-hanches","s-kickav","s-kicklat","x-kickarr","x-thoracique","x-wgs","x-squat","x-birddog","x-sidebridge","x-sidebridgek","x-curlup","s2-pincedebout","s2-canape","s2-demiecart","s2-lezard","s2-pigeon","s2-papillon","s2-pancake","s2-pinceassise","x-bras2","x-hanches2"]);
 /* Vidéos de la Mobilité (Veo, image de départ = image de fin : elles bouclent) */
 /* Vidéos et images de la Mobilité au fond aplani (vid/<id>.mp4 et vid/<id>.jpg, 540×960) */
-const PLSTILL={squat:"x-squat",kickarr:"x-kickarr"},PLV="?v=2";
-const PLVID={cou:"x-cou",bras:"x-bras",chatvache:"x-chat",hanches:"x-hanches",kickav:"s-kickav",kicklat:"s-kicklat",thoracique:"x-thoracique",wgs:"x-wgs"};
+const PLSTILL={squat:"x-squat",kickarr:"x-kickarr",bras:"x-bras2",hanches:"x-hanches2"},PLV="?v=2";
+const PLVID={cou:"x-cou",chatvache:"x-chat",kickav:"s-kickav",kicklat:"s-kicklat",thoracique:"x-thoracique",wgs:"x-wgs"};
 const IMGF=k=>`img/${k}.webp?v=${MOB_TALL.has(k)?27:18}`;
 const EXIMG={cou:["x-cou"],bras:["x-bras"],chatvache:["x-chat","x-vache"],hanches:["x-hanches"],kickav:["s-kickav"],kicklat:["s-kicklat"],kickarr:["x-kickarr"],thoracique:["x-thoracique"],wgs:["x-wgs"],squat:["x-squat"],curlup:["x-curlup"],sidebridge:["x-sidebridge"],birddog:["x-birddog"],
  canape:["s-canape"],mollet:["s-mollet"],cheville:["s-cheville"],demiecart:["s-demiecart"],pigeon:["s-pigeon"],rotint:["s-rotint"],papillon:["s-papillon"],chiot:["s-chiot"],rouleau:["s-rouleau"],
@@ -1519,6 +1519,7 @@ const EXIMG={cou:["x-cou"],bras:["x-bras"],chatvache:["x-chat","x-vache"],hanche
  squatlent:["x-squatlent"],cosaque:["x-cosaque"],cosaqueleste:["x-cosaqueleste"],adducteur:["x-adducteur"],goodmorning:["x-goodmorning"]};
 const SOUPST=new Set(["pincedebout","canape","demiecart","lezard","pigeon","papillon","pancake","pinceassise"]);/* Souplesse : images vid/s2-<id>.jpg au fond aplani */
 for(const id of SOUPST)EXIMG[id]=["s2-"+id];
+EXIMG.bras=["x-bras2"];EXIMG.hanches=["x-hanches2"];
 const EXALT=new Set(["chatvache","fenteecart"]);
 const nrm=t=>String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 /* Listes (genoux, sauts) : premier motif qui correspond */
