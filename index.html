@@ -266,9 +266,9 @@ details.proto>summary .pc{font-size:12.5px;color:var(--muted);text-align:right}
 
 /* Barre d'onglets */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--paper);border-top:1px solid var(--hair);padding:4px max(16px,env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
-.tabs-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
-.tab{background:none;border:0;padding:10px 2px 8px;display:grid;justify-items:center;gap:5px;font-size:10.5px;font-weight:500;color:var(--muted)}
-.tab svg{width:22px;height:22px;display:block}
+.tabs-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+.tab{background:none;border:0;padding:11px 2px 9px;display:grid;justify-items:center;gap:6px;font-size:12.5px;font-weight:500;color:var(--muted)}
+.tab svg{width:26px;height:26px;display:block}
 .tab.on{color:var(--ink)}
 
 /* Lecteur de souplesse */
@@ -531,7 +531,8 @@ body.jx .tab.on{color:#fff}
 .jx-head .brand{color:#fff}
 .jx-meta{font-size:12px;color:rgba(255,255,255,.42);text-align:right;letter-spacing:.01em}
 .jx-stage{flex:1;display:grid;align-content:center;justify-items:center;padding:14px 0 6px;position:relative}
-.jx-wheelbox{position:relative;width:min(94vw,430px);aspect-ratio:1}
+.jx-wheelbox{--w:min(calc(100vw - 16px),500px);position:relative;width:var(--w);margin-inline:calc((100% - var(--w)) / 2);aspect-ratio:1}
+html.jx,body.jx{overflow-x:clip}
 .jx-aura{position:absolute;inset:-14%;border-radius:50%;background:conic-gradient(from 0deg,#C98470,#8C6FB8,#4E6FA8,#D9A384,#B77A6B,#C98470);filter:blur(56px);opacity:calc(.10 + var(--sc,0) * .34);animation:jxspin 46s linear infinite;pointer-events:none;transition:opacity 1.2s ease}
 @keyframes jxspin{to{transform:rotate(360deg)}}
 .jx-svg{position:relative;display:block;width:100%;height:100%;overflow:visible;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -2821,10 +2822,10 @@ function viewJour(){
   const d=parseKey(ui.date),isToday=ui.date===todayKey(),fut=diffDays(new Date(),d)>0;
   const w=progWeek(d),p=phaseOf(Math.max(1,w)),dn=diffDays(parseKey(state.profile.start),d)+1;
   const items=gridItems(d),N=Math.max(1,items.length),done=items.filter(x=>x.s>=1).length,sc=items.length?items.reduce((a,x)=>a+Math.min(1,x.s),0)/items.length:0;
-  const R=190,r0=30,cr=14,gap=7,step=2*Math.PI/N,fs=N<=7?13:N<=9?12:N<=11?11:10;
+  const R=190,r0=30,cr=14,gap=7,step=2*Math.PI/N,fs=N<=7?15.5:N<=9?14.5:N<=11?13:12;
   const now=Date.now(),anim=JX.key!==ui.date||now-JX.last>2500;JX.key=ui.date;JX.last=now;
   const petals=items.map(({h,s},i)=>{
-    const a0=-Math.PI/2+i*step,a1=a0+step,{d:path,rin}=jxPath(r0,R,a0,a1,cr,gap),m=(a0+a1)/2,rc=(rin+R)/2+4;
+    const a0=-Math.PI/2+i*step,a1=a0+step,{d:path,rin}=jxPath(r0,R,a0,a1,cr,gap),m=(a0+a1)/2,rc=(rin+R)/2+9;
     const lx=200+rc*Math.cos(m),ly=200+rc*Math.sin(m),L=jxLines(SHORT[h.id]||h.name),key=modKey(h,d)||"";
     const k=jxK(s),lh=fs*1.12,tot=L.length*lh+(key?fs*0.95:0),y0=ly-tot/2+fs*0.82;
     const txt=L.map((t,j)=>`<text class="jx-l" x="${lx.toFixed(1)}" y="${(y0+j*lh).toFixed(1)}">${esc(t)}</text>`).join("")+(key&&key.length<=10?`<text class="jx-k" x="${lx.toFixed(1)}" y="${(y0+L.length*lh+fs*0.05).toFixed(1)}">${esc(key)}</text>`:"");
