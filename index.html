@@ -873,6 +873,17 @@ body.dk .toggle:last-child{border-bottom:0}
 .rd[hidden]{display:none}
 .rd[data-dm="psy"]{--rc:#AFA2F5;--rg:rgba(175,162,245,.26)}
 /* Livres : page du livre, chapitres, quiz */
+
+.rd-pickb{margin-top:4px;border:0;border-radius:999px;background:var(--rc);color:#16130F;font:inherit;font-size:16px;font-weight:700;padding:13px 22px}
+.rd-shelf{display:grid;gap:8px;margin-top:18px}
+.rd-bk{border:1px solid transparent;border-radius:18px;background:rgba(255,255,255,.06);color:#fff;text-align:left;padding:14px 16px;font:inherit;display:grid;gap:4px}
+.rd-bk .t{font-size:16.5px;font-weight:700;line-height:1.3}
+.rd-bk .m{font-size:13px;color:rgba(255,255,255,.55);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rd-bk .m em{font-style:normal;font-size:11.5px;font-weight:700;color:#16130F;background:rgba(255,255,255,.6);border-radius:999px;padding:2px 8px}
+.rd-bk.on{border-color:var(--rc);background:var(--rg)}
+.rd-other{margin-top:14px;width:100%}
+.rd-dkb.off{background:rgba(255,255,255,.035)}
+.rd-dkb.off h4{color:rgba(255,255,255,.8)}
 .rd-sh{margin:28px 0 10px;font-size:18px;font-weight:700;letter-spacing:-.01em}
 .rd-chs{display:grid;gap:8px;margin-top:10px}
 .rd-chr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
@@ -1475,7 +1486,7 @@ const DOS_PYR=[[5,3,1],[6,4,2],[6,4,2]];   /* pyramide descendante de McGill : r
 const DOS_VAR=["Version de base : coudes au sol, pont latéral sur les genoux si besoin.","Version intermédiaire : coudes décollés de 2 cm, pont latéral sur les pieds, le chien de chasse balaie le sol entre deux tenues.","Version avancée : contracte le ventre avant chaque tenue et respire contre, main sur la hanche en pont latéral, le chien de chasse dessine des carrés de 30 cm."];
 const LIB=[...new Set([...FLOW_IDS,...SOIR.map(x=>x[0]),...PONT.map(p=>p.ex),...FACIAL.map(p=>p.ex),...FRONT.map(p=>p.ex),"squatlent","cosaque","cosaqueleste","adducteur","goodmorning","cavalier",...DOS])];
 function lvlOf(k){const v=(state.profile.flex||{})[k]||1;return Math.max(1,Math.min(LEVELS[k].list.length,v))}
-/* Séance longue (jour sans muscu, lundi) ou courte (après la muscu, jeudi) : force en fin d'amplitude, puis 1 écart facial + 1 écart avant (Kurz : 2 isométriques maximum), puis le pont */
+/* Séance longue (jour sans muscu, lundi) ou courte (après la muscu, samedi) : force en fin d'amplitude, puis 1 écart facial + 1 écart avant (Kurz : 2 isométriques maximum), puis le pont */
 const isLongFlex=date=>{const d=ordered(daysOf("souplessePlus"));if(d.length<2)return true;if(state.profile.opt.muscu){const m=daysOf("muscu"),free=d.filter(x=>!m.includes(x));if(free.length)return date.getDay()===free[0]}return date.getDay()===d[d.length-1]};
 function splitProto(date){const w=Math.max(1,progWeek(date)),light=lightWeek(w);
   if(w<=4)return {k:"detente",n:"Détendu",reps:2};
@@ -1990,12 +2001,12 @@ document.addEventListener("keydown",e=>{const rt=document.getElementById("rt");i
 document.addEventListener("keydown",e=>{if($x("sx").hidden)return;if(e.key==="Escape"){e.preventDefault();sxClose()}else if(e.key===" "&&e.target.tagName!=="BUTTON"){e.preventDefault();SXA.go()}else if(e.key==="ArrowRight")SXA.next();else if(e.key==="ArrowLeft")SXA.prev()});
 
 /* ===== Muscu v23 : le manuel Full-Body 3 jours =====
-   A lundi lourd (5–8), B mercredi modéré (8–12), C vendredi reps hautes (10–25), D optionnelle.
+   A mardi lourd (5–8), B jeudi modéré (8–12), C samedi reps hautes (10–25), D optionnelle.
    20 semaines : 3 blocs de 6 (5 semaines + 1 allégée) puis 2 semaines de transition. C'est toi qui valides chaque semaine
    (« Terminer la semaine ») : le programme avance à son rythme. Chaque jour où il note une série garde la semaine du programme (v.fbw). */
 const FBX=(id,n,s,r,rir,t,rest,p,type,m,g,o)=>Object.assign({id,n,s,r,rir,t,rest,p,type,m,g},o||{});
 const FB={
- A:{n:"Lourd",d:"Lundi",dur:75,ex:[
+ A:{n:"Lourd",d:"Mardi",dur:75,ex:[
   FBX("squat","Squat barre",4,[5,8],"2","3-0-1-0",180,2.5,"lin","Quadriceps, fessiers","quads",{r3:[4,6],big:1,img:"m-squat",c:"Talons légèrement surélevés si la profondeur coince."}),
   FBX("bench","Développé couché barre",4,[5,8],"2","3-1-1-0",180,2.5,"lin","Pectoraux","pecs",{r3:[4,6],big:1,img:"m-couche",c:"Variante haltères : 4 × 6–10, palier 2 kg par haltère."}),
   FBX("row","Rowing barre buste penché",4,[6,10],"2","2-0-1-1",150,2.5,"lin","Dos","back",{r3:[4,6],big:1,img:"m-rowingbarre",c:"Barre tirée aux côtes basses, coudes derrière le buste."}),
@@ -2004,7 +2015,7 @@ const FB={
   FBX("curlinc","Curl incliné haltères",2,[8,12],"0–1","3-1-1-0",90,1,"dbl","Biceps","biceps",{db:1,iso:1,part:1,img:"m-curlincline",c:"Bras derrière le corps : le biceps travaille étiré."}),
   FBX("triover","Extension triceps au-dessus de la tête, poulie",2,[10,15],"0–1","3-1-1-0",90,2.5,"dbl","Triceps","triceps",{iso:1,part:1,img:"m-tricepsnuque",c:"Position étirée, bras au-dessus de la tête."}),
   FBX("legraise","Relevés de jambes suspendu",2,[10,15],"1","2-0-1-1",60,2.5,"dbl","Abdos","abs",{iso:1,lest:1,img:"m-relevejambes",c:"Charge : lest, 0 au poids du corps."})]},
- B:{n:"Modéré",d:"Mercredi",dur:70,ex:[
+ B:{n:"Modéré",d:"Jeudi",dur:70,ex:[
   FBX("press","Presse à cuisses",3,[8,12],"1","3-0-1-0",150,5,"dbl","Quadriceps","quads",{big:1,rank:8,img:"m-presse",c:"Pieds bas, amplitude complète."}),
   FBX("incline","Développé incliné haltères",3,[8,12],"1–2","3-1-1-0",150,2,"dbl","Pectoraux","pecs",{big:1,rank:6,db:1,img:"m-incline",c:"30°, descente profonde. Bloc 2 : variante barre possible."}),
   FBX("pullup","Traction lestée ou tirage vertical",3,[8,12],"1–2","2-1-1-0",150,2.5,"dbl","Dos","back",{big:1,rank:7,lest:1,img:"m-tractions",c:"Charge : lest (0 au poids du corps) ou charge de la machine."}),
@@ -2013,11 +2024,11 @@ const FB={
   FBX("hammer","Curl marteau",2,[10,15],"0–1","2-0-1-1",90,1,"dbl","Biceps","biceps",{iso:1,db:1,rank:3,img:"m-curlmarteau"}),
   FBX("rope","Extension triceps poulie corde",2,[10,15],"0–1","2-0-1-1",90,2.5,"dbl","Triceps","triceps",{iso:1,rank:4,img:"m-poulie"}),
   FBX("calfst","Mollets debout",3,[8,12],"0–1","2-2-1-1",90,5,"dbl","Mollets","calves",{iso:1,part:1,rank:5,img:"m-mollets",c:"2 s de pause en bas, genou tendu."})]},
- C:{n:"Reps hautes",d:"Vendredi",dur:65,ex:[
+ C:{n:"Reps hautes",d:"Samedi",dur:65,ex:[
   FBX("hack","Hack squat",3,[12,15],"1","3-1-1-0",120,5,"dbl","Quadriceps","quads",{big:1,rank:8,img:"m-hack",c:"Profond. Bloc 2 : fente bulgare possible."}),
   FBX("machine","Développé machine convergente",3,[10,15],"1","2-1-1-0",120,2.5,"dbl","Pectoraux","pecs",{big:1,rank:7,img:"m-chestpress",c:"Ou haltères à plat."}),
   FBX("cablerow","Tirage horizontal poulie",3,[10,15],"1","2-0-1-1",120,2.5,"dbl","Dos","back",{big:1,rank:6,img:"m-rowingassis"}),
-  FBX("hipthrust","Hip thrust",3,[10,15],"1","2-0-1-2",120,5,"dbl","Fessiers, ischios","post",{big:1,rank:5,img:"m-hipthrust",c:"Complète l'extension du buste du lundi."}),
+  FBX("hipthrust","Hip thrust",3,[10,15],"1","2-0-1-2",120,5,"dbl","Fessiers, ischios","post",{big:1,rank:5,img:"m-hipthrust",c:"Complète l'extension du buste du mardi."}),
   FBX("latcable","Élévations latérales à la poulie",3,[15,25],"0","2-0-1-1",60,1,"dbl","Épaules","delts",{iso:1,rank:1,img:"m-elevlatpoulie"}),
   FBX("facepull","Face pull",2,[15,25],"0–1","2-0-1-2",60,2.5,"dbl","Deltoïde postérieur","delts",{iso:1,rank:4,img:"m-facepull"}),
   FBX("curlsup","Curl haltères debout, supination",2,[15,20],"0","2-0-1-1",60,1,"dbl","Biceps","biceps",{iso:1,db:1,rank:2,img:"m-curl"}),
@@ -2031,8 +2042,8 @@ const FB={
 };
 const FBPH=[null,
  {n:"Reprise",poly:"3",iso:"2",txt:"Trouve tes charges de départ : finis chaque série en te disant que tu aurais pu en faire 3 de plus."},
- {n:"Accumulation",poly:"2 à 3",iso:"1 à 2",txt:"Le lundi, la charge monte si tu as atteint le minimum de reps. Les autres jours, essaie de gagner une rep par série."},
- {n:"Accumulation",poly:"2",iso:"1",txt:"Une série de plus sur quelques petits exercices le mercredi et le vendredi. Même technique, même rythme."},
+ {n:"Accumulation",poly:"2 à 3",iso:"1 à 2",txt:"Le mardi, la charge monte si tu as atteint le minimum de reps. Les autres jours, essaie de gagner une rep par série."},
+ {n:"Accumulation",poly:"2",iso:"1",txt:"Une série de plus sur quelques petits exercices le jeudi et le samedi. Même technique, même rythme."},
  {n:"Intensification",poly:"1 à 2",iso:"0 à 1",txt:"Les petits exercices vont jusqu'à l'échec propre. Sur la dernière série des exercices marqués, ajoute 3 à 5 demi-reps dans la partie basse du mouvement."},
  {n:"Pic",poly:"1",iso:"0",txt:"La semaine la plus dure du bloc : vise tes records de reps, puis réponds aux 5 questions en bas de la page."},
  {n:"Semaine allégée",poly:"4 à 5",iso:"4",txt:"Moitié moins de séries et des charges un peu plus basses. Tu récupères, tu ne perds rien : ne saute pas cette semaine."}];
@@ -2115,7 +2126,7 @@ function fbPanel(h,d){
   const tot=S.ex.reduce((a,ex)=>a+fbSets(L,ex,w),0);
   const notes=[`${S.ex.length} exercices, ${tot} séries, environ ${S.dur} min.`,"Échauffement : 5 min de cardio léger, puis 3 séries de plus en plus lourdes sur le premier exercice (10, 6 et 3 reps), et une série légère avant chaque gros exercice."];
   if(L==="B"&&state.profile.plyoAdv)notes.push("Avant la séance : 5 min de puissance du haut du corps, 3 × 5 lancers en rotation au mur par côté et 3 × 5 pompes explosives.");
-  if(L==="D")notes.push("Séance en plus, un jour libre, jamais la veille du lundi. Si tu la sautes, rien ne casse.");
+  if(L==="D")notes.push("Séance en plus, un jour libre, jamais la veille du mardi. Si tu la sautes, rien ne casse.");
   const list=S.ex.map(ex=>{const n=fbSets(L,ex,w),[mn,mx]=fbRange(ex,w),dn=fbDoneCount(ex.id),sg=fbSuggest(ex),t=ex.t.split("-");
     return `<button class="fbc" style="${fbPcStyle(L)}" data-act="fbopen" data-v="${ex.id}">${fbImg(ex,"fbc-i")}<span><span class="fbc-n">${esc(ex.n)}</span><span class="fbc-t"><b>${n} × ${mn}–${mx}</b>Descente ${t[0]} s, repos ${fbSec(ex.rest)}</span></span><span class="fbc-r">${sg.kg==null?"":`<b>${fbKg(sg.kg)}<small>kg</small></b>`}<span class="fbc-dots" aria-label="${dn} séries sur ${n}">${Array.from({length:n},(_,i)=>`<i class="${i<dn?"on":""}"></i>`).join("")}</span></span></button>`}).join("");
   const st=["A","B","C"].map(x=>`<span><i class="${fbSessDone(x)?"ok":""}" style="${fbPcStyle(x)}">${x}</i>${fbSessDone(x)?"faite":fbSessStarted(x)?"commencée":"à faire"}</span>`).join("");
@@ -2281,7 +2292,7 @@ function viewBord(){
   const wChart=`<section class="db-g db-c"><h3>Ton poids<small>${W.c&&W.p?`${(W.c.m-W.p.m>=0?"+":"")}${fbKg(Math.round((W.c.m-W.p.m)*10)/10)} kg en une semaine`:"objectif : +0,25 % par semaine"}</small></h3><div class="big">${wNow!=null?fbKg(wNow):"–"}<small>kg</small></div>${svgLine([{pts:wa,c:"#BFD4FF",w:2.6},{pts:wp,c:"rgba(255,255,255,.35)",w:1,dots:true,dash:"0"}],{dark:true,label:"Poids",empty:"Note ton poids du matin dans Muscu"})}<p>La ligne bleue est ta moyenne de chaque semaine ; les points, tes pesées.</p></section>`;
   const LC=[["squat","#FF6B5E","Squat"],["bench","#7FA8FF","Couché"],["row","#F0CB4E","Rowing"]];
   const lp=LC.map(([id,c])=>({c,pts:fbLogs(id).map(l=>({x:kt(l.k),y:fbLoad(l.sets)})),dots:true}));
-  const lChart=`<section class="db-g db-c"><h3>Tes charges<small>gros exercices du lundi</small></h3>${svgLine(lp,{dark:true,area:false,label:"Charges",empty:"Tes premières séances apparaîtront ici"})}<div class="db-lg">${LC.map(([,c,n])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}</div></section>`;
+  const lChart=`<section class="db-g db-c"><h3>Tes charges<small>gros exercices du mardi</small></h3>${svgLine(lp,{dark:true,area:false,label:"Charges",empty:"Tes premières séances apparaîtront ici"})}<div class="db-lg">${LC.map(([,c,n])=>`<span><i style="background:${c}"></i>${n}</span>`).join("")}</div></section>`;
   const weeksKm=Array.from({length:8},(_,i)=>{const m=addDays(mon,-7*(7-i));return {x:m.getTime(),y:runsIn(keyOf(m),keyOf(addDays(m,6))).reduce((a,r)=>a+(r.km||0),0)}});
   const rChart=`<section class="db-g db-c"><h3>Tes kilomètres<small>8 dernières semaines</small></h3><div class="big">${fmtKm(kmW)}<small>km cette semaine</small></div>${svgLine([{pts:weeksKm,c:"#C6F36B",w:2.4,dots:true}],{dark:true,zero:true,label:"Kilomètres par semaine",empty:"Ta première course apparaîtra ici"})}</section>`;
   return `<div class="db"><div class="db-hi"><h1>${hi}.</h1><p>${esc(line)}</p></div>${stage}<p class="db-t">Tes notes</p>${notes}${bars}${wChart}${lChart}${rChart}</div>`}
@@ -2291,6 +2302,19 @@ const RDM={immo:{h:"lectureRE",n:"Immobilier"},psy:{h:"lecturePsy",n:"Psychologi
 const SRS_INT=[0,1,3,7,16,35,90],SRS_NEW=15;
 const RD={st:"home",dm:"immo",durs:{immo:20,psy:20},t0:0,acc:0,run:false,end:false,iv:0,min:0,edit:false,fin:false,deck:null,q:[],total:0,done:0,fail:new Set(),ok:0,flip:false,ask:0};
 const rdBook=dm=>((state.profile.books||{})[dm]||"").trim();
+/* Les livres connus, prêts à choisir (titres seulement ; les cartes arrivent avec le fichier de cartes) */
+const BOOKCAT={psy:[["greene-nature-humaine","Les lois de la nature humaine","Robert Greene"],["voss-poire","Ne coupez jamais la poire en deux","Chris Voss"],["carnegie-amis","Comment se faire des amis","Dale Carnegie"],["cialdini-influence","Influence et manipulation","Robert Cialdini"],["manson-seduire","L'art subtil de séduire","Mark Manson"],["foxcabane-charisme","Le charisme démythifié","Olivia Fox Cabane"]],
+  immo:[["geltner-cre","Immobilier commercial","Geltner et al., version suisse"],["brueggeman-ref","Financement immobilier","Brueggeman et Fisher, version suisse"]]};
+const BK_PLACE=/^(psychologie|real estate|immobilier|livre|titre du livre)$/i;
+const rdCur=dm=>{const t=rdBook(dm);return t&&!BK_PLACE.test(t)?t:""};
+function rdShelf(dm){const out=[],seen=new Set(),B=state.profile.books||{},done=(B.done||[]).filter(x=>x.dm===dm).map(x=>x.title);
+  for(const [id,t,a] of BOOKCAT[dm]||[]){out.push({id,t,a});seen.add(id)}
+  for(const D of rdDecks(dm))if(!seen.has(D.id)){out.push({id:D.id,t:D.title||"Livre",a:D.author||""});seen.add(D.id)}
+  const titles=new Set(out.map(b=>b.t));
+  for(const t of [rdBook(dm),...done])if(t&&!BK_PLACE.test(t)&&!titles.has(t)){out.push({id:null,t,a:""});titles.add(t)}
+  for(const b of out){const D=b.id&&state.decks[b.id];b.D=D&&Array.isArray(D.cards)&&D.cards.length?D:null;b.done=done.includes(b.t)}
+  return out}
+const bookTitle=id=>{for(const dm of ["psy","immo"])for(const [i,t] of BOOKCAT[dm])if(i===id)return t;const D=state.decks[id];return (D&&D.title)||"Livre"};
 function rdDecks(dm){return Object.entries(state.decks||{}).filter(([id,d])=>d&&d.dm===dm&&Array.isArray(d.cards)&&d.cards.length).map(([id,d])=>Object.assign({id},d)).sort((a,b)=>(a.title||"").localeCompare(b.title||""))}
 function srsOf(id){let x=state.srs[id];if(!x||typeof x!=="object"){x=state.srs[id]={c:{},nd:"",nn:0}}x.c=x.c||{};return x}
 function srsCount(D){const s=state.srs[D.id]||{c:{}},c=s.c||{},T=todayKey();let due=0,fresh=0,known=0;for(const k of D.cards){const st=c[k.id];if(!st)fresh++;else{if(st.due<=T)due++;if((st.b||0)>=4)known++}}
@@ -2302,22 +2326,27 @@ const RDI={back:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" str
 function rdRing(p,glow){const r=46,c=2*Math.PI*r;p=Math.max(0,Math.min(1,p));return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="${r}" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1.6"/><circle id="rd-arc" cx="50" cy="50" r="${r}" fill="none" stroke="var(--rc)" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="${c.toFixed(2)}" stroke-dashoffset="${(c*(1-p)).toFixed(2)}" transform="rotate(-90 50 50)" style="transition:stroke-dashoffset .5s linear;${glow?"filter:drop-shadow(0 0 4px var(--rc))":""}"/></svg>`}
 function rdTop(t,back){return `<div class="rd-top"><button class="rd-back" data-rd="${back||"close"}" aria-label="${back?"Retour":"Fermer"}">${RDI.back}</button><span class="rd-ttl">${esc(t)}</span><span></span></div>`}
 function rdHome(){
-  const dm=RD.dm,M=RDM[dm],b=rdBook(dm),T=todayKey(),d=state.days[T]||{},done=((d.c||{})[M.h])===1,note=((d.rd||{})[dm]||{});
+  const dm=RD.dm,M=RDM[dm],b=rdCur(dm),T=todayKey(),d=state.days[T]||{},done=((d.c||{})[M.h])===1,note=((d.rd||{})[dm]||{});
   const decks=rdDecks(dm);let due=0,nw=0;for(const D of decks){const c=srsCount(D);due+=c.due;nw+=c.nw}
   const notes=rdNotes(dm).filter(n=>!b||n.b===b).length,dur=RD.durs[dm]||20;
   const seg=`<div class="rd-seg" role="tablist">${["immo","psy"].map(x=>{const dn=(((state.days[T]||{}).c||{})[RDM[x].h])===1;return `<button role="tab" aria-selected="${x===dm}" class="${x===dm?"on":""}" data-rd="dm" data-v="${x}">${dn?"<i></i>":""}${RDM[x].n}</button>`}).join("")}</div>`;
-  const book=RD.edit||!b?`<div class="rd-book"><span>Ton livre en cours</span><div class="rd-edit"><input id="rd-bk" value="${esc(b)}" placeholder="Titre du livre" aria-label="Titre du livre en cours" enterkeyhint="done"><button data-rd="bksave">OK</button></div></div>`
-    :`<div class="rd-book"><span>Ton livre en cours</span><h2>${esc(b)}</h2><button class="rd-lk" data-rd="bkedit">Changer de livre</button></div>`;
+  const book=b?`<div class="rd-book"><span>Ton livre en cours</span><h2>${esc(b)}</h2><button class="rd-lk" data-rd="chg">Changer de livre</button></div>`
+    :`<div class="rd-book"><span>Ton livre en cours</span><button class="rd-pickb" data-rd="chg">Choisis ton livre</button></div>`;
   const orb=`<button class="rd-orb" data-rd="start" aria-label="${done?"Relire":"Commencer"} ${dur} minutes de lecture"><i class="gl" aria-hidden="true"></i>${rdRing(done?1:0)}<span class="ct"><b>${dur}</b><span>${done?"minutes · fait ce soir":"minutes · commencer"}</span></span></button>`;
   const durs=`<div class="rd-dur" role="group" aria-label="Durée">${[10,20,30].map(m=>`<button class="${m===dur?"on":""}" data-rd="dur" data-v="${m}" aria-pressed="${m===dur}">${m} min</button>`).join("")}</div>`;
   const cardsTile=decks.length?`<button class="rd-tile${due+nw?" hot":""}" data-rd="decks"><em>Séance cartes</em><b>${due+nw}</b><span>${due+nw?`carte${due+nw>1?"s":""} à revoir aujourd'hui`:"rien à revoir, reviens demain"}</span></button>`
-    :`<button class="rd-tile" data-rd="decks"><em>Séance cartes</em><b>0</b><span>les cartes arrivent quand tu envoies le PDF du livre</span></button>`;
+    :`<button class="rd-tile" data-rd="decks"><em>Séance cartes</em><b>0</b><span>ajoute le fichier de cartes pour réviser tes livres</span></button>`;
   const notesTile=`<button class="rd-tile" data-rd="notes"><em>Ce que tu as retenu</em><b>${notes}</b><span>${note.t?"note de ce soir enregistrée":notes?"notes sur ce livre":"ta première note après la lecture"}</span></button>`;
   const fin=b?`<button class="rd-lk" data-rd="fin">${RD.fin?"Touche encore pour confirmer : livre fini":"Livre fini"}</button>`:"";
   return `${rdTop("Lecture du soir")}${seg}${book}${orb}${durs}<div class="rd-tiles">${cardsTile}${notesTile}</div><div class="rd-foot">${fin}</div>`}
+function rdAfterPick(){if(RD.go){RDA.read()}else{RD.st="home";rdRender()}}
+function rdPickView(){const dm=RD.dm,cur=rdCur(dm),sh=rdShelf(dm);
+  return `${rdTop(RD.go?"Lecture du soir":"Ton livre","home")}<h2 class="rd-h">${RD.go?"Quel livre lis-tu ce soir ?":"Choisis ton livre"}</h2><p class="rd-p">${RD.go?`Touche le titre : tes ${RD.durs[dm]||20} minutes de lecture commencent.`:"Il reste ton livre en cours jusqu'à ce que tu en changes."}</p>
+   <div class="rd-shelf">${sh.map((b,i)=>`<button class="rd-bk${b.t===cur?" on":""}" data-rd="pick" data-v="${i}"><span class="t">${esc(b.t)}</span>${b.a||b.done?`<span class="m">${esc(b.a)}${b.done?`<em>terminé</em>`:""}</span>`:""}</button>`).join("")}</div>
+   <div class="rd-edit rd-other"><input id="rd-bk" placeholder="Un autre livre : écris son titre" aria-label="Titre d'un autre livre" enterkeyhint="done"><button data-rd="bksave">OK</button></div>`}
 function rdReading(){
   const tot=(RD.durs[RD.dm]||20)*60,el=Math.min(tot,rdEl()),left=tot-el;
-  return `${rdTop(RDM[RD.dm].n,"stop")}
+  return `${rdTop(rdCur(RD.dm)||RDM[RD.dm].n,"stop")}
    <div style="flex:1;display:grid;align-content:center;justify-items:center">
     <div class="rd-orb" style="margin-top:0;width:min(76vw,310px)"><i class="gl" aria-hidden="true"></i><span id="rd-ring">${rdRing(el/tot,true)}</span><span class="ct"><b id="rd-t">${RD.end?"0:00":rdMMSS(left)}</b><span id="rd-s">${RD.end?"temps écoulé":RD.run?"lis, le téléphone face cachée":"en pause"}</span></span></div>
    </div>
@@ -2332,13 +2361,15 @@ function rdNotesView(){
   const list=all.map(n=>{const h=n.b&&n.b!==last?`<h4>${esc(n.b)}</h4>`:"";last=n.b||last;return `${h}<article class="rd-n"><div><span>${JOURS[parseKey(n.k).getDay()]} ${fmtShort(n.k).replace(/\.$/,"")}${n.min?`, ${n.min} min`:""}</span>${n.k===T?`<button class="rd-lk" data-rd="noteedit">Modifier</button>`:""}</div><p>${esc(n.t)}</p></article>`}).join("");
   return `${rdTop("Ce que tu as retenu","home")}<h2 class="rd-h">${RDM[dm].n}</h2>${all.length?`<div class="rd-nl">${list}</div>`:`<div class="rd-empty"><b>Pas encore de note</b>Après ta lecture, écris ce que tu as retenu : tout s'enregistre ici, livre par livre.</div>`}`}
 function rdDecksView(){
-  const dm=RD.dm,decks=rdDecks(dm);
-  if(!decks.length)return `${rdTop("Séance cartes","home")}<h2 class="rd-h">${RDM[dm].n}</h2><div class="rd-empty"><b>Pas encore de cartes</b>Envoie le PDF de ton livre à Claude : il te renvoie un fichier de cartes à ajouter ici.</div><div class="rd-foot"><button class="rd-btn2" data-rd="imp">Ajouter un fichier de cartes</button></div>`;
-  return `${rdTop("Séance cartes","home")}<h2 class="rd-h">Choisis ton livre</h2><p class="rd-p">Chaque carte sue revient de plus en plus tard. Une carte ratée revient tout de suite, puis demain.</p><div class="rd-dk">${decks.map(D=>{const c=srsCount(D),n=c.due+c.nw;return `<button class="rd-dkb" data-rd="book" data-v="${esc(D.id)}"><h4>${esc(D.title||"Livre")}</h4><div class="bar"><i style="width:${Math.round(c.known/Math.max(1,c.total)*100)}%"></i></div><span>${c.known} sur ${c.total} cartes bien ancrées${c.fresh?`, ${c.fresh} jamais vues`:""}</span>${n?`<span class="due">${n} à revoir</span>`:`<span>Rien à revoir aujourd'hui</span>`}</button>`}).join("")}</div><div class="rd-foot"><button class="rd-btn2" data-rd="imp">Ajouter un fichier de cartes</button></div>`}
+  const dm=RD.dm,sh=rdShelf(dm);
+  return `${rdTop("Séance cartes","home")}<h2 class="rd-h">Quel livre réviser ?</h2><p class="rd-p">Chaque carte sue revient de plus en plus tard. Une carte ratée revient tout de suite, puis demain.</p><div class="rd-dk">${sh.map((b,i)=>{
+    if(!b.D)return `<button class="rd-dkb off" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><span>Cartes pas encore ajoutées</span></button>`;
+    const c=srsCount(Object.assign({id:b.id},b.D)),n=c.due+c.nw;
+    return `<button class="rd-dkb" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><div class="bar"><i style="width:${Math.round(c.known/Math.max(1,c.total)*100)}%"></i></div><span>${c.known} sur ${c.total} cartes bien ancrées${c.fresh?`, ${c.fresh} jamais vues`:""}</span>${n?`<span class="due">${n} à revoir</span>`:`<span>Rien à revoir aujourd'hui</span>`}</button>`}).join("")}</div><div class="rd-foot"><button class="rd-btn2" data-rd="imp">Ajouter un fichier de cartes</button></div>`}
 function rdCardView(){
   const D=state.decks[RD.deck];const cid=RD.q[0],C=D&&D.cards.find(c=>c.id===cid);if(!C){RD.st="end";return rdEndView()}
   const pct=Math.round(RD.done/Math.max(1,RD.total)*100);
-  return `${rdTop(D.title||"Séance cartes","bk")}<div class="rd-prog"><i style="width:${pct}%"></i></div><div class="rd-cnt"><span>${RD.done} sur ${RD.total}</span><span>${RD.fail.size?`${RD.fail.size} à reprendre`:"&nbsp;"}</span></div>
+  return `${rdTop(bookTitle(RD.deck),"bk")}<div class="rd-prog"><i style="width:${pct}%"></i></div><div class="rd-cnt"><span>${RD.done} sur ${RD.total}</span><span>${RD.fail.size?`${RD.fail.size} à reprendre`:"&nbsp;"}</span></div>
    <div class="rd-card"><button class="rd-ci${RD.flip?" flip":""}" id="rd-ci" data-rd="flip" aria-label="${RD.flip?"Réponse affichée":"Retourner la carte"}">
     <span class="rd-face">${C.ch?`<small>${esc(C.ch)}</small>`:""}<p>${esc(C.q)}</p><em>Réponds dans ta tête, puis touche la carte</em></span>
     <span class="rd-face bk"><span class="q">${esc(C.q)}</span><p>${esc(C.a)}</p></span></button></div>
@@ -2349,7 +2380,7 @@ function rdEndView(){
    ${RD.total?`<div class="rd-st"><div><b>${RD.total}</b><span>cartes</span></div><div><b>${RD.ok}</b><span>sues du premier coup</span></div><div><b>${RD.fail.size}</b><span>reprises</span></div></div>`:""}</div>
    <div class="rd-foot"><button class="rd-btn" data-rd="bk">Retour au livre</button></div>`}
 function rdRender(){const el=document.getElementById("rd");if(!el)return;el.dataset.dm=RD.dm;
-  const V={home:rdHome,read:rdReading,note:rdNote,notes:rdNotesView,decks:rdDecksView,book:rdBookView,card:rdCardView,end:rdEndView,quiz:rdQuizView,qend:rdQuizEnd}[RD.st]||rdHome;
+  const V={home:rdHome,pick:rdPickView,read:rdReading,note:rdNote,notes:rdNotesView,decks:rdDecksView,book:rdBookView,card:rdCardView,end:rdEndView,quiz:rdQuizView,qend:rdQuizEnd}[RD.st]||rdHome;
   el.innerHTML=`<div class="rd-sky" aria-hidden="true"></div><div class="rd-in">${V()}</div>`}
 function rdTick(){if(RD.st!=="read")return;const tot=(RD.durs[RD.dm]||20)*60,el=rdEl();
   if(el>=tot&&!RD.end){RD.end=true;RD.acc=tot;RD.run=false;rdChime();rdRender();return}
@@ -2365,9 +2396,10 @@ function rdClose(){if(RD.st==="read"&&!RD.end&&RD.ask<Date.now()-2500){RD.ask=Da
 const QN=10;
 function deckChs(D){const m=new Map();for(const c of D.cards){const k=c.ch||"Sans chapitre";if(!m.has(k))m.set(k,[]);m.get(k).push(c)}return [...m.entries()]}
 function chStat(id,cards){const c=((state.srs[id]||{}).c)||{},T=todayKey();let known=0,due=0,seen=0;for(const k of cards){const st=c[k.id];if(st){seen++;if(st.due<=T)due++;if((st.b||0)>=4)known++}}return {known,due,seen,total:cards.length}}
-function rdBookView(){const id=RD.deck,D=state.decks[id];if(!D){RD.st="decks";return rdDecksView()}
+function rdBookView(){const id=RD.deck,D=id&&state.decks[id];
+  if(!D||!Array.isArray(D.cards)||!D.cards.length)return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(id?bookTitle(id):RD.bt||"Livre")}</h2><div class="rd-empty"><b>Les cartes de ce livre ne sont pas encore dans l'app</b>${id?"Ajoute le fichier de cartes que Claude t'a envoyé (evolve-cartes-livres.json) : tous les livres arrivent d'un coup.":"Envoie le PDF de ce livre à Claude : il te renvoie un fichier de cartes à ajouter ici."}</div><div class="rd-foot"><button class="rd-btn" data-rd="imp">Ajouter un fichier de cartes</button></div>`;
   const c=srsCount(Object.assign({id},D)),n=c.due+c.nw,Q=(D.quiz||[]).length,qz=(state.srs[id]||{}).qz,chs=deckChs(D);
-  return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(D.title||"Livre")}</h2><p class="rd-p">${D.author?esc(D.author)+". ":""}${D.cards.length} cartes en ${chs.length} chapitres${Q?`, ${Q} questions de quiz`:""}.</p>
+  return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(bookTitle(id))}</h2><p class="rd-p">${D.author?esc(D.author)+". ":""}${D.cards.length} cartes en ${chs.length} chapitres${Q?`, ${Q} questions de quiz`:""}.</p>
    <div class="rd-tiles"><button class="rd-tile${n?" hot":""}" data-rd="deck" data-v="${esc(id)}"><em>Cartes du jour</em><b>${n}</b><span>${n?`${c.due} à revoir, ${c.nw} nouvelles`:"rien à revoir, reviens demain"}</span></button>
    ${Q?`<button class="rd-tile" data-rd="quiz"><em>Quiz du livre</em><b>${Math.min(QN,Q)}</b><span>${qz&&qz.lastN?`questions · dernier score ${qz.last} sur ${qz.lastN}`:"questions tirées de tout le livre"}</span></button>`:""}</div>
    <h3 class="rd-sh">Par chapitre</h3><p class="rd-p" style="margin-top:0">Touche un chapitre pour réviser seulement ses cartes.</p>
@@ -2410,9 +2442,12 @@ const RDA={
   dm(el){RD.dm=el.dataset.v;RD.edit=false;RD.fin=false;rdRender()},
   dur(el){RD.durs[RD.dm]=Number(el.dataset.v);rdRender()},
   bkedit(){RD.edit=true;rdRender();setTimeout(()=>{const x=document.getElementById("rd-bk");if(x)x.focus()},40)},
-  bksave(){const x=document.getElementById("rd-bk"),v=x?x.value.trim():"";if(!v){toast("Écris le titre du livre");return}state.profile.books[RD.dm]=v;save("profile");RD.edit=false;rdRender()},
-  fin(){const b=state.profile.books,dm=RD.dm;if(!b[dm])return;if(!RD.fin){RD.fin=true;rdRender();return}RD.fin=false;b.done=b.done||[];b.done.push({title:b[dm],dm,date:todayKey()});b[dm]="";save("profile");rdRender();toast("Livre terminé : ses cartes continuent de revenir")},
-  start(){if(!rdBook(RD.dm)){RD.edit=true;rdRender();toast("Écris d'abord le titre du livre");return}RD.st="read";RD.acc=0;RD.t0=Date.now();RD.run=true;RD.end=false;rdRender();clearInterval(RD.iv);RD.iv=setInterval(rdTick,500)},
+  bksave(){const x=document.getElementById("rd-bk"),v=x?x.value.trim():"";if(!v){toast("Écris le titre du livre");return}state.profile.books[RD.dm]=v;save("profile");RD.edit=false;rdAfterPick()},
+  chg(){RD.go=false;RD.st="pick";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
+  pick(el){const b=rdShelf(RD.dm)[Number(el.dataset.v)];if(!b)return;state.profile.books[RD.dm]=b.t;save("profile");rdAfterPick()},
+  fin(){const b=state.profile.books,dm=RD.dm;if(!rdCur(dm))return;if(!RD.fin){RD.fin=true;rdRender();return}RD.fin=false;b.done=b.done||[];b.done.push({title:b[dm],dm,date:todayKey()});b[dm]="";save("profile");rdRender();toast("Livre terminé : ses cartes continuent de revenir")},
+  start(){RD.go=true;RD.st="pick";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
+  read(){RD.go=false;RD.st="read";RD.acc=0;RD.t0=Date.now();RD.run=true;RD.end=false;rdRender();clearInterval(RD.iv);RD.iv=setInterval(rdTick,500)},
   pause(){if(RD.run){RD.acc=rdEl();RD.run=false}else{RD.t0=Date.now();RD.run=true}rdRender()},
   fini(){RD.min=Math.max(1,Math.round(Math.min(rdEl(),(RD.durs[RD.dm]||20)*60)/60));clearInterval(RD.iv);RD.run=false;RD.st="note";rdRender();setTimeout(()=>{const t=document.getElementById("rd-ta");if(t)t.focus()},60)},
   noteedit(){RD.min=0;RD.st="note";rdRender()},
@@ -2420,8 +2455,8 @@ const RDA={
     const T=todayKey(),d=dayObj(T);d.rd=d.rd||{};const prev=d.rd[RD.dm]||{};d.rd[RD.dm]={b:rdBook(RD.dm)||prev.b||"",t:t.trim(),min:(num(prev.min)||0)+(RD.min||0),at:new Date().toISOString()};RD.min=0;
     d.c[RDM[RD.dm].h]=1;save("days",T);RD.st="home";rdRender();toast("Lecture enregistrée")},
   deck(el){rdStartDeck(el.dataset.v)},
-  book(el){RD.deck=el.dataset.v;RD.st="book";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
-  bk(){RD.st=RD.deck&&state.decks[RD.deck]?"book":"decks";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
+  book(el){const b=rdShelf(RD.dm)[Number(el.dataset.i)];RD.deck=b?b.id:el.dataset.v;RD.bt=b?b.t:"";RD.st="book";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
+  bk(){RD.st=RD.deck?"book":"decks";rdRender();const r=document.getElementById("rd");if(r)r.scrollTop=0},
   chap(el){const D=state.decks[RD.deck];if(!D)return;const x=deckChs(D)[Number(el.dataset.v)];if(x)rdStartDeck(RD.deck,x[0])},
   quiz(){rdStartQuiz(RD.deck)},
   quizch(el){const D=state.decks[RD.deck];if(!D)return;const x=deckChs(D)[Number(el.dataset.v)];if(x)rdStartQuiz(RD.deck,x[0])},
@@ -2454,7 +2489,7 @@ function jnPanel(d){
   return `<div class="jn"><section class="jn-hero"><span>Du ${fmtShort(keyOf(mon)).replace(/\.$/,"")} au ${fmtShort(keyOf(sun)).replace(/\.$/,"")}</span><h2>${w>=1?`Semaine ${w}`:"Ta semaine"}</h2><p>${esc(wl||"Regarde tes chiffres, note ta semaine, choisis une seule priorité.")}</p></section>
    <div class="jn-g">${tiles.map(([b,l])=>`<div><b>${b}</b><span>${l}</span></div>`).join("")}</div>
    <section class="jn-c"><h3>Ta note de la semaine</h3><div class="jn-n" role="radiogroup" aria-label="Note de la semaine de 1 à 10">${Array.from({length:10},(_,i)=>`<button role="radio" aria-checked="${note===i+1}" class="${note===i+1?"on":""}" data-act="jnote" data-w="${wk}" data-v="${i+1}">${i+1}</button>`).join("")}</div></section>
-   <section class="jn-c">${q("ok","Ta plus grande victoire","Raconte-la au « je », et savoure-la.")}${q("ko","Ce qui t'a freiné, et la leçon","Raconte-le par ton prénom, comme un ami qui regarde la scène.")}${q("change","Ta priorité pour la semaine prochaine","Une seule, accrochée à un moment : « lundi, après la muscu, je… »")}</section>
+   <section class="jn-c">${q("ok","Ta plus grande victoire","Raconte-la au « je », et savoure-la.")}${q("ko","Ce qui t'a freiné, et la leçon","Raconte-le par ton prénom, comme un ami qui regarde la scène.")}${q("change","Ta priorité pour la semaine prochaine","Une seule, accrochée à un moment : « mardi, après la muscu, je… »")}</section>
    <button class="jn-save" data-act="jsave" data-w="${wk}">Enregistrer la semaine</button>${saved.savedAt?`<p class="jn-ok">Enregistrée le ${fmtShort(saved.savedAt).replace(/\.$/,"")}</p>`:""}
    <section class="jn-c"><h3>Tes notes, semaine après semaine</h3><div class="jn-h">${hist}</div></section>
    <div class="pfoot">${methodLink("journal")}</div></div>`}
@@ -2589,7 +2624,7 @@ const WEEKLY=[
 ];
 const HMAP=Object.fromEntries([...HABITS,...WEEKLY].map(h=>[h.id,h]));
 const ALL=[0,1,2,3,4,5,6];
-const DEFAULT_DAYS={mobilite:ALL,meditation:ALL,plyo:[6],muscu:[1,3,5],course:[2,4,0],dos:ALL,genoux:[4,6],souplessePlus:[2,5],nutrition:ALL,froid:[2,4],etirements:ALL,lectureRE:ALL,lecturePsy:ALL,reseaux:ALL,journal:[0]};
+const DEFAULT_DAYS={mobilite:ALL,meditation:ALL,plyo:[5],muscu:[2,4,6],course:[1,3,0],dos:ALL,genoux:[3,5],souplessePlus:[1,6],nutrition:ALL,froid:[1,3],etirements:ALL,lectureRE:ALL,lecturePsy:ALL,reseaux:ALL,journal:[0]};
 const MODCOL={meditation:"#5B63B7",journal:"#8E95D8",revisions:"#3E4A99",mobilite:"#8FCBF0",froid:"#4FA7E0",etirements:"#9A9FDE",souplessePlus:"#6FB7D9",muscu:"#E8794F",plyo:"#C4552F",basket:"#F08A5E",volley:"#E9A07E",course:"#F0AA75",dos:"#7FB5C9",bilan:"#C9B79C",genoux:"#E6C98F",nutrition:"#D9B46A",lecturePsy:"#A69BD6",lectureRE:"#D9865F",relations:"#E99A7C",reseaux:"#B9B4A6",dehors:"#C9C07A"};
 const colOf=id=>MODCOL[id]||"#8C8C88";
 const lum=hex=>{const n=parseInt(hex.slice(1),16);const r=n>>16&255,g=n>>8&255,b=n&255;return (0.299*r+0.587*g+0.114*b)/255};
@@ -2786,7 +2821,7 @@ function runPlan(date){
 }
 /* ===== Genoux : tendon rotulien et hanche (Kongsgaard 2009, Rio 2015, Lack 2015, Malliaras 2015, Kjær 2009, Chu & Myer 2013) ===== */
 /* ===== Genoux et ischios (Brukner & Khan 2017 ; Cook & Purdam ; Kongsgaard 2009 ; Rio 2015 ; Lack 2015 ; Petersen 2011) =====
-   Isométrie d'abord, puis charge lente et lourde 3 s / 4 s, au moins 2 fois par semaine à vie ; mercredi et dimanche, au lendemain des jours de sauts */
+   Isométrie d'abord, puis charge lente et lourde 3 s / 4 s, au moins 2 fois par semaine à vie ; mercredi après la course, vendredi avant les sauts */
 const GENOUX_P=[
  [["Squat espagnol isométrique","3 × 45 s, sangle derrière les genoux, mi-amplitude, 1 min entre · toujours en premier"],["Squat lent sur une jambe, talon sur une marche","2 × 8 par jambe · 3 s pour monter, 4 s pour descendre"],["Mollet sur une jambe, sur une marche","2 × 10 par jambe · de la pointe complète au talon à plat, 3 s / 4 s"],["Pont fessier, fessiers serrés avant de monter","2 × 10, dos neutre"],["Abduction de hanche couché sur le côté","2 × 12 par côté"],["Descendre d'une marche et se figer","2 × 5 · genoux au-dessus des orteils, silence à l'atterrissage"]],
  [["Squat espagnol isométrique","4 × 45 s, le plus dur que tu tiens sans trembler, 1 min entre"],["Squat lent sur une jambe, sac à dos lesté","3 × 8 à 10 par jambe · 3 s / 4 s · la dernière répétition est dure"],["Mollet sur une jambe, sac à dos","3 × 10 par jambe · 3 s / 4 s, amplitude complète"],["Pont fessier sur une jambe","3 × 10 par jambe"],["Abduction de hanche avec élastique","2 × 15 par côté"],["Descendre d'une marche de 40 cm et se figer","2 × 6"]],
@@ -2794,7 +2829,7 @@ const GENOUX_P=[
 ];
 const GENOUX=GENOUX_P[1];
 /* Nordique (Brukner & Khan, tableau 12.2 ; Petersen 2011) : 10 semaines de montée, puis 1 fois par semaine à vie */
-function nordicPlan(date){const w=Math.max(1,progWeek(date)),sun=date.getDay()===0;
+function nordicPlan(date){const w=Math.max(1,progWeek(date)),sun=date.getDay()===ordered(daysOf("genoux")).slice(-1)[0];
   if(w===1)return sun?"2 × 5":null;
   if(w===2)return "2 × 6";if(w===3)return "3 × 6 à 8";if(w===4)return "3 × 8 à 10";
   if(w<=10)return "3 séries : 12, 10, 8";
@@ -2889,7 +2924,7 @@ function panel(h,d){
       return `<p class="m-lead">${["Fondation","Montée","Progression"][p]}.<small>${gym?"La charge lourde est faite en salle : squat, presse, hack, descente en 3 s.":"Lent et lourd, au lendemain des jours de sauts."}</small></p><h2 class="xs-h">Les exercices, dans l'ordre</h2><div class="xl">${kc}</div><h2 class="xs-h">Ta douleur au genou</h2><label class="fld"><span>Pendant la séance, de 0 à 10</span><input class="in" type="number" inputmode="numeric" min="0" max="10" id="v-kp-${k}" data-ch="v" data-id="kp" value="${esc(v.kp??"")}"></label><div class="note">Jusqu'à 3/10 : normal. 5/10 un instant : acceptable. Si c'est pire le lendemain matin : on n'augmente rien, et moins de sauts cette semaine. Jamais de repos complet, jamais de glace : 5 × 45 s de squat espagnol calment le tendon.</div><div class="pfoot">${methodLink("genoux")}</div>`}
     case "muscu":return fbPanel(h,d);
     case "nutrition":return steps(["Protéines à chaque repas.","Moitié de l'assiette en légumes et fruits.","Café avant 14 h.","Le moins d'ultra-transformé possible."],true)+`<div class="pfoot">${methodLink("nutrition")}</div>`;
-    case "froid":return steps(["Souplesse d'abord, bain ensuite : un muscle froid s'étire mal.","Mardi et jeudi : le soir, au moins 6 h après la course, pour ne pas freiner ce qu'elle construit. Jamais un jour de muscu : juste après les poids, il freine les gains de force.","Eau à 10–15 °C : jusqu'à 10–15 min. Plus froide : 2 à 5 min, pas plus.","Entre lentement, expire longuement. Reste immobile, épaules sous l'eau.","Sors avant de grelotter fort. Réchauffe-toi en bougeant, pas sous la douche chaude."],true)+`<div class="pfoot">${methodLink("froid")}</div>`;
+    case "froid":return steps(["Souplesse d'abord, bain ensuite : un muscle froid s'étire mal.","Lundi et mercredi : le soir, au moins 6 h après la course, pour ne pas freiner ce qu'elle construit. Jamais un jour de muscu : juste après les poids, il freine les gains de force.","Eau à 10–15 °C : jusqu'à 10–15 min. Plus froide : 2 à 5 min, pas plus.","Entre lentement, expire longuement. Reste immobile, épaules sous l'eau.","Sors avant de grelotter fort. Réchauffe-toi en bougeant, pas sous la douche chaude."],true)+`<div class="pfoot">${methodLink("froid")}</div>`;
     case "reseaux":return `<label class="fld"><span>Minutes sur les réseaux</span><input class="in" type="number" inputmode="numeric" min="0" id="v-res-${k}" data-ch="v" data-id="reseaux" value="${esc(v.reseaux??"")}"></label><div class="pfoot">${methodLink("options")}</div>`;
     case "journal":return jnPanel(d);
   }
@@ -3140,7 +3175,7 @@ const FICHES=[
   src:["balban", "zeng15", "ferrari19", "breines12", "carrillo19", "goleman17"]},
  {id:"mobilite",t:"Mobilité",en:"Garder chaque articulation libre, et remettre à zéro chaque matin la longueur de tes muscles pour la journée.",
   combien:"Tous les jours, 8 à 12 min. Levés de jambe : 3 séries de 12 dans chaque direction au début, 2 dès la semaine 9, une seule dès la 17.",quand:"Le matin avant le petit-déjeuner, après quelques minutes debout : rien qui plie le dos dans l'heure qui suit le réveil. Une 2e série de levés de jambe le soir.",
-  comment:["D'abord les articulations : cou, épaules, chat-vache doux, cercles de hanche.", "Puis les levés de jambe avant, côté, arrière : tu lèves, tu ne lances pas. Un peu plus haut à chaque fois ; dès que la hauteur baisse, c'est fini.", "Jamais de contracter-relâcher le matin : il est réservé au lundi et au jeudi.", "Assis longtemps (cours, bureau) : toutes les 30 min, 1 min en squat profond ; toutes les heures, couch stretch 1 min par côté. Vise 10 min de squat profond par jour."],
+  comment:["D'abord les articulations : cou, épaules, chat-vache doux, cercles de hanche.", "Puis les levés de jambe avant, côté, arrière : tu lèves, tu ne lances pas. Un peu plus haut à chaque fois ; dès que la hauteur baisse, c'est fini.", "Jamais de contracter-relâcher le matin : il est réservé au lundi et au samedi.", "Assis longtemps (cours, bureau) : toutes les 30 min, 1 min en squat profond ; toutes les heures, couch stretch 1 min par côté. Vise 10 min de squat profond par jour."],
   elite:"Kurz : des levés de jambe deux fois par jour, cinq jours de suite, ont doublé le gain d'amplitude dynamique par rapport à un jour sur deux. Starrett fait faire 10 à 15 min par jour, sans jour off.",
   preuve:"Prouvé : un échauffement en mouvement améliore la performance qui suit, les étirements tenus juste avant la font baisser. Pour le dos, une colonne plus mobile n'est pas plus sûre : la mobilité se gagne aux hanches. Les 2 min par position de Starrett n'ont pas d'étude derrière : on les garde pour le couch stretch, utile après des heures assis.",
   moves:FLOW_IDS,
@@ -3153,7 +3188,7 @@ const FICHES=[
   moves:SOIR.map(x=>x[0]),
   src:["bandy97", "thomas", "konrad24", "kurz03", "brukner17", "starrett15"]},
  {id:"pont",t:"Pont & écarts",en:"Les deux objectifs visibles : les grands écarts et le pont complet. Deux séances par semaine, avec la force qui ouvre l'amplitude.",
-  combien:"Mardi soir : force en fin d'amplitude, les deux écarts, puis le pont, 30 à 40 min. Vendredi, juste après la muscu : les deux écarts, 5 à 25 min selon la semaine.",quand:"Le soir, ou juste après la muscu. Jamais dans l'heure avant un sport, jamais le matin.",
+  combien:"Lundi soir : force en fin d'amplitude, les deux écarts, puis le pont, 30 à 40 min. Samedi, juste après la muscu : les deux écarts, 5 à 25 min selon la semaine.",quand:"Le soir, ou juste après la muscu. Jamais dans l'heure avant un sport, jamais le matin.",
   comment:["Semaines 1 à 4 : positions détendues. 5 à 8 : contracter-relâcher doux, 20 à 30 % de ta force. Montée : isométrique, 3 répétitions, contractions de 4 s, dernière tenue de 10 puis 20 s. Progression : contractions fortes, dernière tenue de 30 s.", "Isométrique de Kurz : contracte, relâche, descends dans la seconde, recommence jusqu'à la limite, puis tiens la dernière contraction.", "Écart facial : papillon, assis jambes écartées, cavalier isométrique, puis l'écart au sol. Les adducteurs trop faibles sont le principal obstacle : d'où le balayage à l'élastique et le cavalier.", "Écart avant : la hanche arrière limite plus que les ischios. Douleur à l'os des fesses : on arrête.", "Pont : niveau suivant seulement sans pincement dans le bas du dos. L'arc vient du haut du dos et des hanches. On finit par quelques chat-vache doux."],
   elite:"Kurz obtient le grand écart avec 2 à 4 séances isométriques par semaine, jamais tous les jours : « considère les étirements isométriques comme de la musculation ». Pour lui, quelques semaines à quelques mois ; pour Laughlin, 3 à 5 ans chez un adulte raide.",
   preuve:"Les étirements isométriques sont la méthode la plus rapide (Holt 1970, Tanigawa 1972, Etnyre 1986). Les hanches demandent 60 à 120 jours pour atteindre 90 % de leur amplitude. Étirer en se renforçant réduit l'écart entre souplesse active et passive, et cet écart va avec les blessures. Contracter-relâcher : pas plus de 2 séances par semaine. McGill met en garde contre l'extension complète répétée de la colonne : 3 séries, jamais le matin.",
@@ -3167,25 +3202,25 @@ const FICHES=[
   moves:DOS,
   src:["mcgillBM","mcgillLBD","brukner17"]},
  {id:"genoux",t:"Genoux",en:"Tendon de la rotule solide pour toujours : lent, lourd, deux fois par semaine, à vie.",
-  combien:"La charge lourde se fait en salle : squat, presse et hack, descente en 3 s, 3 fois par semaine. Jeudi et samedi, 12 min : squat espagnol 3 puis 4 × 45 s, nordique pour les ischios, hanche, réception. Sans salle : 20 à 25 min avec le squat lent sur une jambe et le mollet.",quand:"Jeudi après la course, samedi juste avant les sauts. L'isométrie toujours en premier : elle calme le tendon pendant 45 min.",
+  combien:"La charge lourde se fait en salle : squat, presse et hack, descente en 3 s, 3 fois par semaine. Mercredi et vendredi, 12 min : squat espagnol 3 puis 4 × 45 s, nordique pour les ischios, hanche, réception. Sans salle : 20 à 25 min avec le squat lent sur une jambe et le mollet.",quand:"Mercredi après la course, vendredi juste avant les sauts. L'isométrie toujours en premier : elle calme le tendon pendant 45 min.",
   comment:["Isométrie : mi-amplitude, le plus lourd que tu tiens sans trembler, 45 s. Elle calme la douleur du tendon pendant 45 min.", "Charge lente et lourde : 3 s pour monter, 4 s pour descendre, la dernière répétition est dure. Au moins 2 fois par semaine, à vie : c'est l'arrêt de ce travail qui fait revenir les tendinites.", "Nordique : 10 semaines de montée, de 2 × 5 à 3 séries de 12, 10 et 8, puis une fois par semaine.", "Douleur : jusqu'à 3/10 normal, 5/10 un instant acceptable, jamais pire le lendemain matin. Sinon : moins de sauts, on garde la charge lente.", "Jamais de repos complet, de glace ni de massage sur le tendon. Talon surélevé douloureux : fais-le à plat."],
   elite:"Les pros gardent la charge lourde toute la saison et ne coupent que les sauts quand le tendon parle.",
   preuve:"Le squat lent et lourd a donné les meilleurs résultats à 6 mois (Kongsgaard 2009). Les charges lourdes raidissent le tendon de 15 à 19 % en 8 semaines, les légères ne font rien. Renforcer la hanche aide plus que le genou seul (méta-analyse 2015). Le nordique a divisé par 3 les blessures des ischios et par 7 les récidives (Petersen 2011). Un échauffement 11+ deux fois par semaine réduit les blessures du genou de 25 à 50 %.",
   src:["brukner17", "kongsgaard09", "rio15", "lack15", "petersen11", "soligard08", "kjaer09", "nsca16"]},
  {id:"course",t:"Course",en:"Trois sorties par semaine, les jours sans muscu : une facile, une de qualité, une longue. Le schéma des meilleurs coureurs, à ta dose.",
-  combien:"À ton niveau, environ 2 h 30 et 22 à 28 km par semaine. Mardi : 35 à 40 min faciles, 6 à 8 km, avec 6 accélérations ou 6 à 8 sprints en côte. Jeudi : 40 à 50 min avec la partie dure, 7 à 9 km. Dimanche : 55 à 70 min faciles, 9 à 12 km. Jamais plus de 10 % de kilomètres en plus d'une semaine à l'autre.",quand:"Avant : 5 min de marche et des levés de jambe ; avant la qualité, 15 à 20 min d'échauffement. Après : 5 min de marche.",
-  comment:["Facile = phrases entières, souffle 3 pas / 3 pas : 80 % de ton temps de course. L'erreur numéro un des amateurs : courir « moyen » tous les jours.", "Niveaux 1 et 2 : zéro intervalle pendant 16 semaines. D'abord 30 min en continu, puis accélérations et sprints en côte de 8 s.", "Niveau 3 : d'abord le seuil, puis le dur. Jamais plus vite que l'allure tenable 10 à 15 min.", "Le fractionné, c'est le jeudi, une seule fois par semaine. Il tourne sur 3 blocs de 4 semaines : d'abord vite (8 × 200 m), puis dur (4 × 4 min, la meilleure séance connue pour le cœur), puis allure soutenue (20 min).", "Sprints en côte : 6 à 8 montées de 8 à 10 s à fond, retour en marchant. Ça rend plus rapide et ça protège les tendons, sans fatiguer.", "Une deuxième séance dure dans la semaine ne fait pas progresser plus : elle fatigue et blesse.", "Pied posé sous le corps, pas de foulée trop longue. Ne force ni l'attaque avant-pied ni les chaussures minimalistes : 3 fois plus de blessures dans un essai.", "Niveau suivant seulement quand le bloc est devenu facile."],
+  combien:"À ton niveau, environ 2 h 30 et 22 à 28 km par semaine. Lundi : 35 à 40 min faciles, 6 à 8 km, avec 6 accélérations ou 6 à 8 sprints en côte. Mercredi : 40 à 50 min avec la partie dure, 7 à 9 km. Dimanche : 55 à 70 min faciles, 9 à 12 km. Jamais plus de 10 % de kilomètres en plus d'une semaine à l'autre.",quand:"Avant : 5 min de marche et des levés de jambe ; avant la qualité, 15 à 20 min d'échauffement. Après : 5 min de marche.",
+  comment:["Facile = phrases entières, souffle 3 pas / 3 pas : 80 % de ton temps de course. L'erreur numéro un des amateurs : courir « moyen » tous les jours.", "Niveaux 1 et 2 : zéro intervalle pendant 16 semaines. D'abord 30 min en continu, puis accélérations et sprints en côte de 8 s.", "Niveau 3 : d'abord le seuil, puis le dur. Jamais plus vite que l'allure tenable 10 à 15 min.", "Le fractionné, c'est le mercredi, une seule fois par semaine. Il tourne sur 3 blocs de 4 semaines : d'abord vite (8 × 200 m), puis dur (4 × 4 min, la meilleure séance connue pour le cœur), puis allure soutenue (20 min).", "Sprints en côte : 6 à 8 montées de 8 à 10 s à fond, retour en marchant. Ça rend plus rapide et ça protège les tendons, sans fatiguer.", "Une deuxième séance dure dans la semaine ne fait pas progresser plus : elle fatigue et blesse.", "Pied posé sous le corps, pas de foulée trop longue. Ne force ni l'attaque avant-pied ni les chaussures minimalistes : 3 fois plus de blessures dans un essai.", "Niveau suivant seulement quand le bloc est devenu facile."],
   elite:"Les athlètes d'endurance font 80 % de leur temps facile et 20 % dur. Sur 48 athlètes, le schéma polarisé a donné les plus gros gains. Leurs coachs tiennent une charge 3 à 4 semaines et ne changent qu'une chose à la fois.",
   preuve:"Courir, même une fois par semaine moins de 50 min, baisse le risque de mort de 27 % (232 000 personnes). Le 4 × 4 min a augmenté le cardio maximal de 7 % en 8 semaines chez des coureurs entraînés. Chez 874 débutants, plus de 30 % de progression par semaine multipliait les blessures. Trois séances dures par semaine ont fait régresser des coureurs entraînés.",
   src:["daniels22", "fitz14", "magness14", "brukner17", "starrett14", "pedisic20", "helgerud07", "stoggl14", "nielsen14", "gabbett16"]},
- {id:"plyo",t:"Pliométrie",en:"Plus haut, plus loin, plus vite, plus fort des bras : une séance complète le samedi, avant la muscu.",
-  combien:"Samedi, environ 40 min échauffement compris. Chaque séance mélange les sauts verticaux, en longueur et sur le côté, 4 à 6 sprints courts et 5 min de haut du corps (rotation, pompes explosives). Drop jumps une semaine sur deux, l'autre semaine sauts sur une jambe et bonds. Blocs de 6 semaines, la caisse monte de 30 à 60 cm. Le mercredi, 5 min de haut du corps en plus avant la muscu.",quand:"Après l'échauffement, avant la muscu, jambes fraîches.",
+ {id:"plyo",t:"Pliométrie",en:"Plus haut, plus loin, plus vite, plus fort des bras : une séance complète le vendredi, un jour sans muscu.",
+  combien:"Vendredi, environ 40 min échauffement compris. Chaque séance mélange les sauts verticaux, en longueur et sur le côté, 4 à 6 sprints courts et 5 min de haut du corps (rotation, pompes explosives). Drop jumps une semaine sur deux, l'autre semaine sauts sur une jambe et bonds. Blocs de 6 semaines, la caisse monte de 30 à 60 cm. Le jeudi, 5 min de haut du corps en plus avant la muscu.",quand:"Après l'échauffement, jambes fraîches.",
   comment:["Drop jump : laisse-toi tomber de la caisse, ne saute pas. Atterris sur l'avant du pied et repars tout de suite : le sol est brûlant. Talon qui touche le sol : caisse trop haute.", "Tu montes la caisse de 10 cm seulement si tu sautes aussi haut qu'en saut vertical normal. Maximum 60 cm.", "Sauts à fond : 10 s entre deux sauts, 2 à 3 min entre les séries. La série s'arrête dès que la hauteur baisse.", "Atterris pieds droits, genoux au-dessus des orteils, jamais vers l'intérieur. Herbe, piste ou tapis, jamais le béton.", "Tendon du genou douloureux ce jour-là, ou pire le matin : pas de sauts.", "Le lendemain des drop jumps reste léger : course facile.", "Vise toujours une cible : toucher un repère haut, dépasser une ligne. Penser à la cible plutôt qu'à ses jambes fait sauter plus haut.", "Sprints : 15 à 20 m à 100 %, 2 min de marche entre deux. On cherche la vitesse, pas le cardio."],
   elite:"Verkhoshansky, l'inventeur des drop jumps, les réserve aux athlètes qui squattent 1,5 à 2 fois leur poids. En saison, il les place une fois tous les 10 à 14 jours, au moins 2 à 3 jours avant un entraînement technique, avec une journée légère le lendemain.",
   preuve:"Ce qui marche le mieux pour la détente : plus de 10 semaines, plus de 20 séances, plus de 50 sauts par séance, et un mélange de squat jumps, contre-mouvements et drop jumps ; ajouter du poids n'apporte rien (de Villarreal 2009). Pour la vitesse : plus de 80 sauts par séance, des sauts vers l'avant et des sprints (de Villarreal 2012). Le haut du corps répond aussi : lancers de médecine-ball +0,64 d'effet, force +0,39, avec 2 séances par semaine (Garcia-Carrillo 2023). Des sauts juste avant des sprints les rendent plus rapides, surtout chez les gens forts (Seitz & Haff 2016). Viser une cible fait sauter plus haut (Wulf 2007). En saison, une séance de sauts par semaine suffit pour un sport collectif (NSCA). Sauts et squat lourd combinés : +10,7 cm de détente en 6 semaines, contre +3,8 cm pour les sauts seuls. Sauter après la musculation est l'ordre le moins efficace (Supertraining). Une chute de 60 cm allonge déjà le contact au sol et charge plus le genou (Chu & Myer). Plus de 100 sauts à fond par séance n'est « ni productif ni sûr ».",
   src:["verkho09", "chu13", "nsca16", "brukner17", "adams", "markovic", "villarreal09", "villarreal12", "garcia23", "seitz16", "wulf07", "tack13", "ramirez20", "visnes13"]},
  {id:"froid",t:"Bain froid",en:"Ta piscine comme bain froid, deux fois par semaine, là où il aide sans freiner tes progrès.",
-  combien:"Mardi et jeudi. 2 min, puis 4, puis 6. Eau à 10–15 °C : jusqu'à 10–15 min. Plus froide : 2 à 5 min maximum.",quand:"Le soir, au moins 6 h après la course, après la souplesse. Jamais un jour de muscu, jamais avant un sport.",
+  combien:"Lundi et mercredi. 2 min, puis 4, puis 6. Eau à 10–15 °C : jusqu'à 10–15 min. Plus froide : 2 à 5 min maximum.",quand:"Le soir, au moins 6 h après la course, après la souplesse. Jamais un jour de muscu, jamais avant un sport.",
   comment:["Souplesse d'abord, bain ensuite.", "Respire avec le cercle : 30 s avant d'entrer pour te calmer, puis entre lentement jusqu'aux épaules.", "La première minute, c'est le choc : 3 s d'inspiration, 6 s d'expiration, comme dans une paille. Ensuite 4 s et 6 s, immobile, mains relâchées.", "Jamais de respiration forcée avant d'entrer, jamais d'apnée, jamais la tête sous l'eau seul, jamais après l'alcool.", "Sors avant de grelotter fort, réchauffe-toi en bougeant."],
   elite:"Les pros l'utilisent après les matchs et en compétition, et le laissent de côté pendant les blocs où ils veulent progresser. Les Russes n'utilisaient pas le même moyen de récupération plus de 2 fois par semaine.",
   preuve:"Dans l'eau froide, le corps halète et respire très vite : ce choc culmine dans la première minute puis retombe en 1 à 3 minutes, et une expiration lente aide à reprendre le contrôle. Meilleurs résultats entre 10 et 15 °C, 10 à 15 min. Il améliore sprint et détente du lendemain de 2 à 3 %. Répété après chaque séance, il a freiné les gains de force (12 semaines) et d'endurance (4 à 6 semaines). Une récupération faite 6 à 9 h après l'effort donnait le meilleur lendemain.",
@@ -3210,12 +3245,12 @@ const FICHES=[
   src:["phillips","watson","drake","chang","brukner17"]},
  {id:"journal",t:"Journal de performance",en:"Dix minutes le dimanche : les chiffres de ta semaine, une note sur 10, et une seule priorité pour la suivante.",
   combien:"Une fois par semaine, le dimanche.",quand:"Dimanche soir, après la longue sortie.",
-  comment:["Regarde d'abord tes chiffres : séances, kilomètres, lecture, cartes. Les faits avant l'impression.","Note ta semaine de 1 à 10.","Ta plus grande victoire : raconte-la au « je » et savoure-la.","Ce qui t'a freiné : raconte-le par ton prénom, comme un ami qui regarde la scène, puis tire la leçon.","Une seule priorité pour la semaine prochaine, accrochée à un moment précis : « lundi, après la muscu, je… »."],
+  comment:["Regarde d'abord tes chiffres : séances, kilomètres, lecture, cartes. Les faits avant l'impression.","Note ta semaine de 1 à 10.","Ta plus grande victoire : raconte-la au « je » et savoure-la.","Ce qui t'a freiné : raconte-le par ton prénom, comme un ami qui regarde la scène, puis tire la leçon.","Une seule priorité pour la semaine prochaine, accrochée à un moment précis : « mardi, après la muscu, je… »."],
   elite:"Sages avec les problèmes des autres, nuls avec les nôtres : c'est le paradoxe de Salomon. Se parler par son prénom le résout, et c'est ce que font les gens qui restent calmes sous pression.",
   preuve:"Suivre ses progrès augmente les chances d'atteindre ses objectifs, surtout quand on les écrit (138 études). Prévoir « quand ceci arrive, je fais cela » rend nettement plus probable le passage à l'action (94 études). Se parler par son prénom calme le cerveau en moins d'une seconde.",
   src:["harkin","gollwitzer","kross14","kross21"]},
  {id:"muscu",t:"Musculation",en:"Le manuel Full-Body 3 jours : chaque muscle 3 fois par semaine, une charge calculée pour chaque séance, un cycle de 20 semaines.",
-  combien:"Lundi A lourd (5 à 8 reps), mercredi B modéré (8 à 12), vendredi C en reps hautes (10 à 25), environ 70 min. D en plus, si tu veux : bras, épaules, abdos, un jour libre mais jamais la veille du lundi. 3 blocs de 6 semaines (5 qui montent, 1 allégée), puis 2 semaines de transition. Tu valides toi-même chaque semaine : le programme avance à ton rythme.",quand:"Un jour de repos au minimum entre deux séances. Cardio les jours sans muscu, jamais juste avant. Pas de bain froid un jour de muscu.",
+  combien:"Mardi A lourd (5 à 8 reps), jeudi B modéré (8 à 12), samedi C en reps hautes (10 à 25), environ 70 min. D en plus, si tu veux : bras, épaules, abdos, un jour libre mais jamais la veille du mardi. 3 blocs de 6 semaines (5 qui montent, 1 allégée), puis 2 semaines de transition. Tu valides toi-même chaque semaine : le programme avance à ton rythme.",quand:"Un jour de repos au minimum entre deux séances. Cardio les jours sans muscu, jamais juste avant. Pas de bain froid un jour de muscu.",
   comment:["Note la charge et les reps de chaque série : l'app calcule la charge de la semaine suivante.", "Squat, développé couché, rowing : la charge monte dès que toutes les séries atteignent le minimum de reps. Après deux échecs de suite, elle ne monte plus qu'au maximum.", "Tous les autres exercices : la charge monte quand toutes les séries atteignent le haut de la fourchette ; tu repars alors en bas.", "Reps en réserve : le nombre de reps que tu aurais encore pu faire. Gros exercices à 1 à 3 reps de l'échec, petits exercices à 0 à 2 : l'échec est réservé aux petits exercices.", "Tempo : la descente en secondes, la pause en bas, la montée toujours rapide, la pause en haut. Repos 2 à 3 min sur les gros exercices, 1 à 1 min 30 sur les petits.", "Semaines 6, 12 et 18 : allégées, moitié moins de séries et charges moins 10 %, sans arrêter."],
   elite:"Le schéma lourd, modéré, léger dans la même semaine est presque identique au programme 3 jours de Schoenfeld ; l'ajout progressif de séries vient de Renaissance Periodization ; l'ordre des priorités vient de la pyramide de Helms.",
   preuve:"Au moins 10 séries par muscle et par semaine font plus que moins (Schoenfeld 2017, Pelland 2024). S'arrêter plus près de l'échec fait plus de muscle, sans effet sur la force (Robinson 2024). Progresser en charge ou en reps donne la même masse (Plotkin 2022). Travailler le muscle étiré fait mieux : leg curl assis (Maeo 2021), triceps au-dessus de la tête, environ +40 % (Maeo 2023). Au-delà de 1,6 g de protéines par kilo, pas de gain en plus (Morton 2018). Un peu de cardio ne freine ni le muscle ni la force (Schumann 2022). Une semaine d'arrêt complet freine la force, d'où une semaine allégée plutôt qu'un arrêt (Coleman 2024).",
