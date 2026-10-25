@@ -2335,7 +2335,7 @@ function rdHome(){
   const orb=`<button class="rd-orb" data-rd="start" aria-label="${done?"Relire":"Commencer"} ${dur} minutes de lecture"><i class="gl" aria-hidden="true"></i>${rdRing(done?1:0)}<span class="ct"><b>${dur}</b><span>${done?"minutes · fait ce soir":"minutes · commencer"}</span></span></button>`;
   const durs=`<div class="rd-dur" role="group" aria-label="Durée">${[10,20,30].map(m=>`<button class="${m===dur?"on":""}" data-rd="dur" data-v="${m}" aria-pressed="${m===dur}">${m} min</button>`).join("")}</div>`;
   const cardsTile=decks.length?`<button class="rd-tile${due+nw?" hot":""}" data-rd="decks"><em>Séance cartes</em><b>${due+nw}</b><span>${due+nw?`carte${due+nw>1?"s":""} à revoir aujourd'hui`:"rien à revoir, reviens demain"}</span></button>`
-    :`<button class="rd-tile" data-rd="decks"><em>Séance cartes</em><b>0</b><span>ajoute le fichier de cartes pour réviser tes livres</span></button>`;
+    :`<button class="rd-tile" data-rd="decks"><em>Séance cartes</em><b>0</b><span>les cartes de tes livres se chargent avec internet</span></button>`;
   const notesTile=`<button class="rd-tile" data-rd="notes"><em>Ce que tu as retenu</em><b>${notes}</b><span>${note.t?"note de ce soir enregistrée":notes?"notes sur ce livre":"ta première note après la lecture"}</span></button>`;
   const fin=b?`<button class="rd-lk" data-rd="fin">${RD.fin?"Touche encore pour confirmer : livre fini":"Livre fini"}</button>`:"";
   return `${rdTop("Lecture du soir")}${seg}${book}${orb}${durs}<div class="rd-tiles">${cardsTile}${notesTile}</div><div class="rd-foot">${fin}</div>`}
@@ -2363,9 +2363,9 @@ function rdNotesView(){
 function rdDecksView(){
   const dm=RD.dm,sh=rdShelf(dm);
   return `${rdTop("Séance cartes","home")}<h2 class="rd-h">Quel livre réviser ?</h2><p class="rd-p">Chaque carte sue revient de plus en plus tard. Une carte ratée revient tout de suite, puis demain.</p><div class="rd-dk">${sh.map((b,i)=>{
-    if(!b.D)return `<button class="rd-dkb off" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><span>Cartes pas encore ajoutées</span></button>`;
+    if(!b.D)return `<button class="rd-dkb off" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><span>${b.id?"Les cartes se chargent avec internet":"Pas encore de cartes"}</span></button>`;
     const c=srsCount(Object.assign({id:b.id},b.D)),n=c.due+c.nw;
-    return `<button class="rd-dkb" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><div class="bar"><i style="width:${Math.round(c.known/Math.max(1,c.total)*100)}%"></i></div><span>${c.known} sur ${c.total} cartes bien ancrées${c.fresh?`, ${c.fresh} jamais vues`:""}</span>${n?`<span class="due">${n} à revoir</span>`:`<span>Rien à revoir aujourd'hui</span>`}</button>`}).join("")}</div><div class="rd-foot"><button class="rd-btn2" data-rd="imp">Ajouter un fichier de cartes</button></div>`}
+    return `<button class="rd-dkb" data-rd="book" data-i="${i}"><h4>${esc(b.t)}</h4><div class="bar"><i style="width:${Math.round(c.known/Math.max(1,c.total)*100)}%"></i></div><span>${c.known} sur ${c.total} cartes bien ancrées${c.fresh?`, ${c.fresh} jamais vues`:""}</span>${n?`<span class="due">${n} à revoir</span>`:`<span>Rien à revoir aujourd'hui</span>`}</button>`}).join("")}</div><div class="rd-foot"><button class="rd-lk" data-rd="imp">Un autre livre ? Ajouter un fichier de cartes</button></div>`}
 function rdCardView(){
   const D=state.decks[RD.deck];const cid=RD.q[0],C=D&&D.cards.find(c=>c.id===cid);if(!C){RD.st="end";return rdEndView()}
   const pct=Math.round(RD.done/Math.max(1,RD.total)*100);
@@ -2397,7 +2397,7 @@ const QN=10;
 function deckChs(D){const m=new Map();for(const c of D.cards){const k=c.ch||"Sans chapitre";if(!m.has(k))m.set(k,[]);m.get(k).push(c)}return [...m.entries()]}
 function chStat(id,cards){const c=((state.srs[id]||{}).c)||{},T=todayKey();let known=0,due=0,seen=0;for(const k of cards){const st=c[k.id];if(st){seen++;if(st.due<=T)due++;if((st.b||0)>=4)known++}}return {known,due,seen,total:cards.length}}
 function rdBookView(){const id=RD.deck,D=id&&state.decks[id];
-  if(!D||!Array.isArray(D.cards)||!D.cards.length)return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(id?bookTitle(id):RD.bt||"Livre")}</h2><div class="rd-empty"><b>Les cartes de ce livre ne sont pas encore dans l'app</b>${id?"Ajoute le fichier de cartes que Claude t'a envoyé (evolve-cartes-livres.json) : tous les livres arrivent d'un coup.":"Envoie le PDF de ce livre à Claude : il te renvoie un fichier de cartes à ajouter ici."}</div><div class="rd-foot"><button class="rd-btn" data-rd="imp">Ajouter un fichier de cartes</button></div>`;
+  if(!D||!Array.isArray(D.cards)||!D.cards.length)return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(id?bookTitle(id):RD.bt||"Livre")}</h2><div class="rd-empty">${id?`<b>Les cartes arrivent</b>Elles se chargent avec internet. Ouvre l'app une fois connecté, puis reviens ici.</div>`:`<b>Pas encore de cartes pour ce livre</b>Envoie le PDF de ce livre à Claude : il te renvoie un fichier de cartes à ajouter ici.</div><div class="rd-foot"><button class="rd-btn" data-rd="imp">Ajouter un fichier de cartes</button></div>`}`;
   const c=srsCount(Object.assign({id},D)),n=c.due+c.nw,Q=(D.quiz||[]).length,qz=(state.srs[id]||{}).qz,chs=deckChs(D);
   return `${rdTop("Livre","decks")}<h2 class="rd-h">${esc(bookTitle(id))}</h2><p class="rd-p">${D.author?esc(D.author)+". ":""}${D.cards.length} cartes en ${chs.length} chapitres${Q?`, ${Q} questions de quiz`:""}.</p>
    <div class="rd-tiles"><button class="rd-tile${n?" hot":""}" data-rd="deck" data-v="${esc(id)}"><em>Cartes du jour</em><b>${n}</b><span>${n?`${c.due} à revoir, ${c.nw} nouvelles`:"rien à revoir, reviens demain"}</span></button>
@@ -2641,16 +2641,23 @@ const LS="evolve-v1";
 let boot=null;try{boot=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){boot=null}
 const state={profile:normProfile(boot&&boot.profile),days:(boot&&boot.days)||{},lectures:(boot&&boot.lectures)||{},journal:(boot&&boot.journal)||{},srs:(boot&&boot.srs)||{},decks:(boot&&boot.decks)||{}};
 const bootCopy=boot?clone(boot):null;
-function persistLocal(){try{localStorage.setItem(LS,JSON.stringify(IDB.ok?Object.assign({},state,{decks:undefined}):state))}catch(e){}}
+function persistLocal(){try{localStorage.setItem(LS,JSON.stringify(Object.assign({},state,{decks:IDB.ok?undefined:userDecks()})))}catch(e){}}
 /* Les livres de cartes sont gros : ils vivent dans IndexedDB, pas dans localStorage (limité à quelques Mo). */
 const IDB={ok:false,db:null,t:0,
   open(){return this.db||(this.db=new Promise((res,rej)=>{const r=indexedDB.open("evolve",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}))},
   get(k){return this.open().then(d=>new Promise((res,rej)=>{const q=d.transaction("kv").objectStore("kv").get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}))},
   set(k,v){return this.open().then(d=>new Promise((res,rej)=>{const tx=d.transaction("kv","readwrite");tx.objectStore("kv").put(v,k);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)}))}};
-function persistDecks(){if(!IDB.ok)return;clearTimeout(IDB.t);IDB.t=setTimeout(()=>{IDB.set("decks",clone(state.decks)).catch(()=>{IDB.ok=false;persistLocal()})},250)}
+/* Les cartes des livres sont livrées avec l'app (cartes.json) : rien à importer. Elles ne sont jamais enregistrées, seule la progression l'est. */
+const CARDS_V="33224a63dd",BUILTIN={};
+function userDecks(){const o={};for(const [id,d] of Object.entries(state.decks||{}))if(d&&!d.bi)o[id]=d;return o}
+function mergeBuiltin(){for(const id in BUILTIN)state.decks[id]=BUILTIN[id]}
+(function(){try{fetch(`cartes.json?v=${CARDS_V}`).then(r=>r.ok?r.json():null).then(j=>{if(!j||!j.decks)return;
+  for(const [id,d] of Object.entries(j.decks))if(d&&Array.isArray(d.cards)){d.bi=1;BUILTIN[id]=d}
+  mergeBuiltin();const rd=document.getElementById("rd");if(rd&&!rd.hidden)rdRender();schedRender()}).catch(()=>{})}catch(e){}})();
+function persistDecks(){if(!IDB.ok)return;clearTimeout(IDB.t);IDB.t=setTimeout(()=>{IDB.set("decks",clone(userDecks())).catch(()=>{IDB.ok=false;persistLocal()})},250)}
 (function(){try{if(!window.indexedDB)return;IDB.get("decks").then(d=>{
-  const had=Object.keys(state.decks).length;state.decks=Object.assign({},(d&&typeof d==="object")?d:{},state.decks);
-  return IDB.set("decks",clone(state.decks)).then(()=>{IDB.ok=true;persistLocal();
+  const had=Object.keys(state.decks).length;state.decks=Object.assign({},(d&&typeof d==="object")?d:{},state.decks);mergeBuiltin();
+  return IDB.set("decks",clone(userDecks())).then(()=>{IDB.ok=true;persistLocal();
     if(Object.keys(state.decks).length!==had){const rd=document.getElementById("rd");if(rd&&!rd.hidden)rdRender();schedRender()}})}).catch(()=>{IDB.ok=false})}catch(e){}})();
 
 const ui={fiche:null,tab:"jour",date:todayKey(),open:null,week:keyOf(mondayOf(new Date())),proto:null,liftEx:null,jdraft:{},sync:"local",confirmDel:null};
@@ -2704,7 +2711,7 @@ function applyCol(kind,qs){
   qs.docs.forEach(doc=>{next[doc.id]=clone(doc.data())});
   for(const [id,val] of Object.entries(state[kind])){if(store.pending.has(`evolve/profile/${kind}/${id}`)) next[id]=val}
   for(const id of Object.keys(next)){if(store.pending.has(`evolve/profile/${kind}/${id}`)&&!(id in state[kind])) delete next[id]}
-  if(kind==="decks"){joinDecks(next);state.decks=next;persistLocal();persistDecks();schedRender();return}
+  if(kind==="decks"){joinDecks(next);state.decks=next;mergeBuiltin();persistLocal();persistDecks();schedRender();return}
   state[kind]=next;persistLocal();schedRender();
 }
 function pushAll(src){
@@ -3394,7 +3401,7 @@ initDb();
 
 /* ===== Version autonome (site) : sauvegarde des données + appli hors Claude ===== */
 function backupHTML(){return `<section class="bk"><p class="bk-t">Tes données</p><p class="bk-n" id="bk-n">Elles sont enregistrées sur ce téléphone. Fais une sauvegarde de temps en temps.</p><div class="bk-b"><button class="btn" data-act="bksave">Sauvegarder mes données</button><button class="btn ghost" data-act="bkload">Restaurer une sauvegarde</button></div><input type="file" id="bk-file" accept=".json,application/json" hidden></section>`}
-async function bkSave(){const name=`evolve-sauvegarde-${todayKey()}.json`,txt=JSON.stringify({app:"evolve",v:1,at:new Date().toISOString(),data:state});
+async function bkSave(){const name=`evolve-sauvegarde-${todayKey()}.json`,txt=JSON.stringify({app:"evolve",v:1,at:new Date().toISOString(),data:Object.assign({},state,{decks:userDecks()})});
   try{const f=new File([txt],name,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Sauvegarde Evolve"});return}}catch(e){if(e&&e.name==="AbortError")return}
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
 function bkLoad(){const inp=document.getElementById("bk-file");if(!inp)return;inp.value="";
@@ -3402,7 +3409,7 @@ function bkLoad(){const inp=document.getElementById("bk-file");if(!inp)return;in
     r.onload=()=>{const n=document.getElementById("bk-n");try{const j=JSON.parse(r.result),d=j&&j.data?j.data:j;if(!d||typeof d!=="object"||!d.profile)throw new Error("format");
       if(!confirm("Remplacer les données de ce téléphone par cette sauvegarde ?"))return;
       state.profile=normProfile(d.profile);for(const k of ["days","lectures","journal","srs"])state[k]=(d[k]&&typeof d[k]==="object")?d[k]:{};
-      if(d.decks&&typeof d.decks==="object"&&Object.keys(d.decks).length)state.decks=d.decks;
+      if(d.decks&&typeof d.decks==="object"&&Object.keys(d.decks).length)state.decks=d.decks;mergeBuiltin();
       persistLocal();persistDecks();render(true);const n2=document.getElementById("bk-n");if(n2)n2.textContent="Sauvegarde restaurée."}
       catch(e){if(n)n.textContent="Ce fichier n'est pas une sauvegarde Evolve."}};
     r.readAsText(f)};
