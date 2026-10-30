@@ -590,6 +590,26 @@ html.jx,body.jx{overflow-x:clip}
 .jx-sub{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;font-size:14px;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums}
 .jx-nav{width:36px;height:36px;border:0;border-radius:50%;background:transparent;color:rgba(255,255,255,.45);display:grid;place-items:center;padding:0}
 .jx-nav:active{color:#fff;background:rgba(255,255,255,.08)}
+
+
+.jx-edit{margin-top:12px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);color:rgba(255,255,255,.82);border-radius:999px;font:inherit;font-size:13.5px;font-weight:600;padding:9px 16px}
+.dx{--rc:#F4F1EC;z-index:54}
+.dx-t{margin:18px 0 0;text-align:center;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.dx-seg{margin-top:16px;width:min(100%,360px)}
+.dx-p{margin:12px auto 0;max-width:34ch;text-align:center;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.55)}
+.dx-h{margin:24px 0 8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.5)}
+.dx-list{display:grid;gap:6px}
+.dx-row{display:grid;grid-template-columns:10px 1fr auto;align-items:center;gap:12px;border:0;border-radius:16px;background:rgba(255,255,255,.04);color:rgba(255,255,255,.55);font:inherit;font-size:16px;text-align:left;padding:13px 14px;min-height:52px}
+.dx-row i{width:10px;height:10px;border-radius:50%;opacity:.45}
+.dx-row.on{background:rgba(255,255,255,.08);color:#fff;font-weight:600}
+.dx-row.on i{opacity:1}
+.dx-sw{width:46px;height:28px;border-radius:999px;background:rgba(255,255,255,.16);position:relative;transition:background .2s}
+.dx-sw::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s}
+.dx-row.on .dx-sw{background:#BFEA8A}
+.dx-row.on .dx-sw::after{transform:translateX(18px)}
+.dx-foot{display:grid;gap:12px;justify-items:center;margin-top:28px}
+.dx-foot .rd-btn{width:100%}
+@media (prefers-reduced-motion:reduce){.dx-sw,.dx-sw::after{transition:none}}
 .jx-hint{margin-top:10px;font-size:11.5px;color:rgba(255,255,255,.32)}
 @media (prefers-reduced-motion:reduce){.jx-aura{animation:none}.jx-in .jx-p{animation:none}.jx-p .jx-f{transition:none}}
 
@@ -1115,6 +1135,7 @@ body.dk .toggle:last-child{border-bottom:0}
 </div>
 <div class="fbs" id="fbs" hidden></div>
 <div class="rd" id="rd" role="dialog" aria-modal="true" aria-label="Lecture du soir" hidden></div>
+<div class="rd dx" id="dx" role="dialog" aria-modal="true" aria-label="Modifier la journée" hidden></div>
 <div class="cb" id="cb" role="dialog" aria-modal="true" aria-label="Bain froid" hidden></div>
 <div class="rt" id="rt" role="dialog" aria-modal="true" aria-label="Course en cours" hidden>
  <div class="rt-top"><button class="rt-x" data-act="rtclose" aria-label="Fermer">×</button><span class="rt-gps" id="rt-gps"><i></i><span>Recherche du GPS…</span></span><span style="width:40px"></span></div>
@@ -1602,7 +1623,7 @@ function plClose(){
 function plSize(){const cv=$p("pl-cv"),r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.max(10,Math.round(r.width*dpr));cv.height=Math.max(10,Math.round(r.height*dpr));PL.dpr=dpr;PL.W=r.width;PL.H=r.height}
 function beep(f,len,vol){if(!PL.sound||!PL.ac)return;try{const o=PL.ac.createOscillator(),g=PL.ac.createGain();o.frequency.value=f;o.type="sine";g.gain.setValueAtTime(vol||0.12,PL.ac.currentTime);g.gain.exponentialRampToValueAtTime(0.0001,PL.ac.currentTime+(len||0.12));o.connect(g).connect(PL.ac.destination);o.start();o.stop(PL.ac.currentTime+(len||0.12)+0.02)}catch(e){}}
 async function plStart(){
-  try{PL.ac=PL.ac||new (window.AudioContext||window.webkitAudioContext)();if(PL.ac.state==="suspended")await PL.ac.resume()}catch(e){PL.ac=null}
+  audPlay();try{PL.ac=audCtx();if(PL.ac&&PL.ac.state!=="running")await PL.ac.resume()}catch(e){PL.ac=null}
   try{if(navigator.wakeLock)PL.wake=await navigator.wakeLock.request("screen")}catch(e){PL.wake=null}
   PL.started=true;PL.run=true;PL.t=0;PL.anim=0;$p("pl-start").hidden=true;$p("pl-ctrl").hidden=false;beep(660,0.18);plTexts(true);
 }
@@ -1847,7 +1868,7 @@ function medOpen(id,date){
   cancelAnimationFrame(MED.raf);MED.last=performance.now();MED.raf=requestAnimationFrame(medLoop);
 }
 async function medStart(){
-  const ctx=audCtx();try{if(ctx&&ctx.state==="suspended")await ctx.resume()}catch(e){}
+  audPlay();const ctx=audCtx();try{if(ctx&&ctx.state==="suspended")await ctx.resume()}catch(e){}
   try{if(navigator.wakeLock)PL.wake=await navigator.wakeLock.request("screen")}catch(e){PL.wake=null}
   MED.started=true;MED.run=true;MED.i=0;MED.t=0;MED.last=performance.now();audChime("start");if(MED.amb)audAmbient(true);if(MED.voice)audSay(fnv(MED.segs[0].say));medBtn();
 }
@@ -1982,7 +2003,7 @@ function sxOpen(date,prog){
   sxShow();if(SX.prog==="soir")for(const [id] of SOIR)if(SOUPST.has(id)){const i=new Image();i.src=`vid/s2-${id}.jpg?v=1`}
   m.tabIndex=-1;m.focus({preventScroll:true});cancelAnimationFrame(SX.raf);SX.last=performance.now();SX.raf=requestAnimationFrame(sxLoop)}
 async function sxStart(){
-  SX.started=true;SX.run=true;SX.ph="prep";SX.t=0;SX.tk="";SX.last=performance.now();
+  audPlay();SX.started=true;SX.run=true;SX.ph="prep";SX.t=0;SX.tk="";SX.last=performance.now();
   const ctx=audCtx();try{if(ctx&&ctx.state==="suspended")ctx.resume()}catch(e){}sxBeep(520,.1,.12);
   try{if(navigator.wakeLock)SX.wake=await navigator.wakeLock.request("screen")}catch(e){SX.wake=null}}
 function sxClose(){cancelAnimationFrame(SX.raf);SX.run=false;$x("sx").hidden=true;document.body.style.overflow="";try{SX.wake&&SX.wake.release()}catch(e){}SX.wake=null;
@@ -2387,7 +2408,7 @@ function rdTick(){if(RD.st!=="read")return;const tot=(RD.durs[RD.dm]||20)*60,el=
   const t=document.getElementById("rd-t");if(t)t.textContent=rdMMSS(tot-el);
   const a=document.getElementById("rd-arc");if(a){const c=2*Math.PI*46;a.setAttribute("stroke-dashoffset",(c*(1-el/tot)).toFixed(2))}}
 function rdChime(){try{navigator.vibrate&&navigator.vibrate([120,80,120])}catch(e){}
-  try{const C=new (window.AudioContext||window.webkitAudioContext)();[[660,0],[880,.22]].forEach(([f,t])=>{const o=C.createOscillator(),g=C.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,C.currentTime+t);g.gain.linearRampToValueAtTime(.18,C.currentTime+t+.03);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+t+1.1);o.connect(g).connect(C.destination);o.start(C.currentTime+t);o.stop(C.currentTime+t+1.2)})}catch(e){}}
+  try{const C=audCtx();if(!C)throw 0;try{C.resume()}catch(e){}[[660,0],[880,.22]].forEach(([f,t])=>{const o=C.createOscillator(),g=C.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(0,C.currentTime+t);g.gain.linearRampToValueAtTime(.18,C.currentTime+t+.03);g.gain.exponentialRampToValueAtTime(.0001,C.currentTime+t+1.1);o.connect(g).connect(C.destination);o.start(C.currentTime+t);o.stop(C.currentTime+t+1.2)})}catch(e){}}
 function rdOpen(dm){RD.dm=dm||RD.dm;RD.st="home";RD.edit=false;RD.fin=false;const el=document.getElementById("rd");el.hidden=false;document.body.style.overflow="hidden";rdRender();el.scrollTop=0}
 function rdClose(){if(RD.st==="read"&&!RD.end&&RD.ask<Date.now()-2500){RD.ask=Date.now();toast("Lecture en cours : touche encore pour quitter");return}
   RD.ask=0;clearInterval(RD.iv);RD.run=false;RD.st="home";document.getElementById("rd").hidden=true;document.body.style.overflow=ui.mod?"hidden":"";render(true)}
@@ -2539,7 +2560,7 @@ function cbLoop(){if(CB.st!=="run")return;const t=(Date.now()-CB.t0)/1000,P=cbPh
   if(arc){const C=2*Math.PI*48,pe=CB.prep+CB.entry,pr=t<pe?0:Math.min(1,(t-pe)/CB.dur);arc.setAttribute("stroke-dashoffset",(C*(1-pr)).toFixed(2))}
   CB.raf=requestAnimationFrame(cbLoop)}
 async function cbGo(){CB.st="run";CB.t0=Date.now();CB.lastKey="";
-  try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
+  audPlay();
   try{CB.ac=audCtx();if(CB.ac&&CB.ac.state==="suspended")await CB.ac.resume();audLoad(["cue2-inspire","cue2-expire"])}catch(e){CB.ac=null}
   try{if(navigator.wakeLock)CB.wake=await navigator.wakeLock.request("screen")}catch(e){CB.wake=null}
   cbRender();cancelAnimationFrame(CB.raf);CB.raf=requestAnimationFrame(cbLoop)}
@@ -2635,8 +2656,8 @@ const PHASES=[{n:"Fondation",r:"Semaines 1 à 6",d:"Tenir chaque jour, doses lé
 const MODES={semestre:{n:"Semestre",d:"Planning normal."},vacances:{n:"Vacances",d:"Pas de révisions. Lecture +10 min, +1 série en muscu si elle est activée."},examens:{n:"Examens",d:"Pas de pliométrie ni de pont & écarts, lecture minimum, muscu courte si activée. Course, dos, genoux, sommeil et méditation ne bougent pas : ils aident tes examens."}};
 
 /* ---------- État et stockage ---------- */
-const defaultProfile=()=>({start:todayKey(),wake:"07:00",weight:null,mode:"semestre",semWeeks:17,run:{lvl:1,since:1},days:clone(DEFAULT_DAYS),opt:{relations:false,dehors:false,reseaux:false,muscu:false},courses:[],books:{psy:"",immo:"",done:[]},sessions:clone(DEFAULT_SESSIONS),flex:{pont:1,facial:1,front:1},plyoAdv:false});
-function normProfile(p){const d=defaultProfile();p=p||{};return {...d,...p,run:{lvl:1,since:1,...(p.run||{})},flex:{...d.flex,...(p.flex||{})},days:{...d.days,...(p.days||{})},opt:{...d.opt,...(p.opt||{})},books:{...d.books,...(p.books||{}),done:Array.isArray(p.books&&p.books.done)?p.books.done:[]},sessions:{...d.sessions,...(p.sessions||{})},courses:Array.isArray(p.courses)?p.courses:[]}}
+const defaultProfile=()=>({start:todayKey(),wake:"07:00",weight:null,mode:"semestre",semWeeks:17,run:{lvl:1,since:1},days:clone(DEFAULT_DAYS),opt:{relations:false,dehors:false,reseaux:false,muscu:true},courses:[],books:{psy:"",immo:"",done:[]},sessions:clone(DEFAULT_SESSIONS),flex:{pont:1,facial:1,front:1},plyoAdv:false});
+function normProfile(p){const d=defaultProfile();p=p||{};if(!(p.mig>=1)){p={...p,mig:1,opt:{...(p.opt||{}),muscu:true}}}return {...d,...p,run:{lvl:1,since:1,...(p.run||{})},flex:{...d.flex,...(p.flex||{})},days:{...d.days,...(p.days||{})},opt:{...d.opt,...(p.opt||{})},books:{...d.books,...(p.books||{}),done:Array.isArray(p.books&&p.books.done)?p.books.done:[]},sessions:{...d.sessions,...(p.sessions||{})},courses:Array.isArray(p.courses)?p.courses:[]}}
 const LS="evolve-v1";
 let boot=null;try{boot=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){boot=null}
 const state={profile:normProfile(boot&&boot.profile),days:(boot&&boot.days)||{},lectures:(boot&&boot.lectures)||{},journal:(boot&&boot.journal)||{},srs:(boot&&boot.srs)||{},decks:(boot&&boot.decks)||{}};
@@ -2754,13 +2775,11 @@ const cyc20=w=>((Math.max(1,w)-1)%20)+1;
 const bilanWk=w=>{const m=cyc20(w);return w===1||m===6||m===12||m===18};
 const blk=w=>Math.max(1,Math.ceil(Math.max(1,w)/6));           /* bloc de 6 semaines, aligné sur la muscu : 1, 2, 3… */
 const lightWeek=w=>{const m=cyc20(w);return m===6||m===12||m===18||m>=19};   /* deloads de la muscu (6, 12, 18) et transition (19, 20) */
-function daysOf(id){return DEFAULT_DAYS[id]||ALL}
-function sched(id,date){
-  const P=state.profile,h=HMAP[id];
-  if(!h)return false;
-  if(h.opt&&!P.opt[id])return false;
-  return daysOf(id).includes(date.getDay());
-}
+function daysOf(id){const w=(state.profile.wk||{})[id];return Array.isArray(w)?w:(DEFAULT_DAYS[id]||ALL)}
+function baseSched(id,date){const P=state.profile,h=HMAP[id];if(!h)return false;if(h.opt&&!P.opt[id])return false;return daysOf(id).includes(date.getDay())}
+function sched(id,date){if(!HMAP[id])return false;const x=(state.days[keyOf(date)]||{}).x;
+  if(x){if((x.rm||[]).includes(id))return false;if((x.add||[]).includes(id))return true}
+  return baseSched(id,date)}
 const itemsFor=date=>HABITS.filter(h=>sched(h.id,date));
 const ordered=days=>WEEK_ORDER.filter(d=>days.includes(d));
 function muscuLetter(date){const days=ordered(daysOf("muscu")),i=days.indexOf(date.getDay());return i<0?"A":"ABC"[i%3]}
@@ -3043,6 +3062,49 @@ function jxPath(r0,R,a0,a1,cr,gap){
 const jxK=s=>s>=1?1:s>0?0.36+0.5*s:0;
 function jxLines(t){if(t.length<=9||!t.includes(" "))return [t];const i=t.lastIndexOf(" ");return [t.slice(0,i),t.slice(i+1)]}
 const JX={last:0,key:""};
+
+/* ===== Modifier la journée : ajouter ou enlever des modules (tous les mêmes jours de la semaine, ou ce jour seulement) ===== */
+const DXS={all:false,k:null};
+function dxOpen(){DXS.k=ui.date;DXS.all=true;const el=document.getElementById("dx");el.hidden=false;document.body.style.overflow="hidden";dxRender();el.scrollTop=0}
+function dxClose(){document.getElementById("dx").hidden=true;document.body.style.overflow=ui.mod?"hidden":"";render(true)}
+function dxRender(){const el=document.getElementById("dx");if(!el||el.hidden)return;const d=parseKey(DXS.k),wd=d.getDay(),jr=JOURS[wd],x=(state.days[DXS.k]||{}).x||{};
+  const changedDay=(x.add||[]).length+(x.rm||[]).length>0,wk=state.profile.wk||{},changedWk=Object.keys(wk).some(id=>{const def=DEFAULT_DAYS[id]||ALL;return def.includes(wd)!==wk[id].includes(wd)});
+  const rows=MOMENTS.map(([m,lab])=>{const hs=HABITS.filter(h=>h.moment===m);if(!hs.length)return "";
+    return `<h3 class="dx-h">${lab}</h3><div class="dx-list">${hs.map(h=>{const on=sched(h.id,d);return `<button class="dx-row${on?" on":""}" data-dx="tog" data-id="${h.id}" role="switch" aria-checked="${on}"><i style="background:${colOf(h.id)}"></i><span>${esc(h.name)}</span><b class="dx-sw" aria-hidden="true"></b></button>`}).join("")}</div>`}).join("");
+  el.innerHTML=`<div class="rd-top"><button class="rd-back" data-dx="close" aria-label="Fermer">${RDI.back}</button><span class="rd-ttl">Ta journée</span><span></span></div>
+   <h2 class="dx-t">${jr.replace(/^./,c=>c.toUpperCase())} ${d.getDate()} ${MOIS[d.getMonth()]}</h2>
+   <div class="rd-seg dx-seg" role="tablist"><button role="tab" class="${DXS.all?"on":""}" aria-selected="${DXS.all}" data-dx="all" data-v="1">Tous les ${jr}s</button><button role="tab" class="${DXS.all?"":"on"}" aria-selected="${!DXS.all}" data-dx="all" data-v="0">Ce jour seulement</button></div>
+   <p class="dx-p">${DXS.all?`Ce que tu changes ici vaut pour chaque ${jr}, à partir de maintenant.`:`Ce que tu changes ici ne touche que ce ${jr} ${d.getDate()} ${MOIS[d.getMonth()]}.`}</p>
+   ${rows}
+   <div class="dx-foot">${DXS.all?(changedWk?`<button class="rd-lk" data-dx="reset">Remettre le plan de base pour le ${jr}</button>`:""):(changedDay?`<button class="rd-lk" data-dx="reset">Annuler les changements de ce jour</button>`:"")}
+   <button class="rd-btn" data-dx="close">Terminé</button></div>`}
+function dxToggle(id){const d=parseKey(DXS.k),wd=d.getDay(),P=state.profile,h=HMAP[id],on=sched(id,d);
+  if(DXS.all){P.wk=P.wk||{};const cur=new Set(daysOf(id));if(on)cur.delete(wd);else cur.add(wd);
+    const nx=ALL.filter(x=>cur.has(x)),def=DEFAULT_DAYS[id]||ALL;
+    if(nx.length===def.length&&nx.every(x=>def.includes(x)))delete P.wk[id];else P.wk[id]=nx;
+    if(!on&&h&&h.opt)P.opt[id]=true;
+    const day=state.days[DXS.k];if(day&&day.x){day.x.add=(day.x.add||[]).filter(i=>i!==id);day.x.rm=(day.x.rm||[]).filter(i=>i!==id);save("days",DXS.k)}
+    save("profile")}
+  else{const day=dayObj(DXS.k),x=day.x=day.x||{add:[],rm:[]};x.add=(x.add||[]).filter(i=>i!==id);x.rm=(x.rm||[]).filter(i=>i!==id);
+    const want=!on;if(want!==baseSched(id,d))(want?x.add:x.rm).push(id);if(!x.add.length&&!x.rm.length)delete day.x;save("days",DXS.k)}
+  dxRender()}
+const DXA={close(){dxClose()},all(el){DXS.all=el.dataset.v==="1";dxRender()},tog(el){dxToggle(el.dataset.id)},
+  reset(){const d=parseKey(DXS.k),wd=d.getDay(),P=state.profile;
+    if(DXS.all){const wk=P.wk||{};for(const id of Object.keys(wk)){const def=DEFAULT_DAYS[id]||ALL,s=new Set(wk[id]);if(def.includes(wd))s.add(wd);else s.delete(wd);const nx=ALL.filter(x=>s.has(x));if(nx.length===def.length&&nx.every(x=>def.includes(x)))delete wk[id];else wk[id]=nx}save("profile")}
+    else{const day=state.days[DXS.k];if(day&&day.x){delete day.x;save("days",DXS.k)}}
+    dxRender()}};
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest("[data-dx]");if(!b||!b.closest("#dx"))return;e.preventDefault();const f=DXA[b.dataset.dx];if(f)f(b)});
+
+/* ===== Son sur iPhone : le son doit sortir même en mode silencieux, et le moteur audio doit être réveillé par un toucher ===== */
+const SILENT="data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
+/* Une séance guidée commence : le son passe en mode « lecture » (il sort même téléphone en silencieux). Le reste du temps, l'app ne coupe pas ta musique. */
+const AUDU={primed:false};
+function audPlay(){try{if(navigator.audioSession&&navigator.audioSession.type!=="playback")navigator.audioSession.type="playback"}catch(e){}
+  const ctx=audCtx();try{if(ctx&&ctx.state!=="running")ctx.resume()}catch(e){}
+  if(!AUDU.primed){AUDU.primed=true;try{const a=new Audio(SILENT);a.setAttribute("playsinline","");a.volume=0.01;const p=a.play();if(p&&p.catch)p.catch(()=>{AUDU.primed=false})}catch(e){AUDU.primed=false}}}
+/* Après un appel ou l'écran verrouillé, l'iPhone met le son en pause : un toucher le réveille. */
+["touchend","pointerdown","click","keydown"].forEach(t=>document.addEventListener(t,()=>{const c=AUD.ctx;try{if(c&&c.state!=="running")c.resume()}catch(e){}},{capture:true,passive:true}));
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")AUDU.primed=false});
 function viewJour(){
   const d=parseKey(ui.date),isToday=ui.date===todayKey(),fut=diffDays(new Date(),d)>0;
   const w=progWeek(d),p=phaseOf(Math.max(1,w)),dn=diffDays(parseKey(state.profile.start),d)+1;
@@ -3067,6 +3129,7 @@ function viewJour(){
     ${petals}<circle class="jx-glow" cx="200" cy="200" r="34" fill="url(#jxGlow)"/><circle class="jx-core" cx="200" cy="200" r="7"/></svg></div></div>
   <div class="jx-foot"><button class="jx-title" data-act="day" data-v="0" aria-label="${isToday?"Aujourd'hui":"Revenir à aujourd'hui"}">${title}</button>
    <div class="jx-sub"><button class="jx-nav" data-act="day" data-v="-1" aria-label="Jour précédent"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button><span id="jx-sub">${JOURS[d.getDay()]} ${d.getDate()} ${MOIS[d.getMonth()]} · ${done} sur ${items.length}</span><button class="jx-nav" data-act="day" data-v="1" aria-label="Jour suivant"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+   <button class="jx-edit" data-act="dxopen">Modifier la journée</button>
    ${hint?`<div class="jx-hint">Touche pour ouvrir · appui long pour cocher</div>`:""}</div></div>`;
 }
 function jxToggle(id){
@@ -3321,6 +3384,7 @@ const A={
   fbweekok(){const c=fbCfg();c.week++;if(c.week>20){c.week=1;c.cycle++}ui.fbConfirm=false;save("profile");render(true);const I=fbInfo(c.week);toast(`Semaine ${c.week} : ${I.ph.n.toLowerCase()}`);const m=document.getElementById("mod");if(m)m.scrollTo({top:0,behavior:reduced()?"auto":"smooth"})},
   fbweekback(){const c=fbCfg();if(c.week>1)c.week--;else if(c.cycle>0){c.week=20;c.cycle--}save("profile");render(true);toast(`Retour en semaine ${c.week}`)},
   fbchk(el){const c=fbCfg(),key=el.dataset.k,a=c.check[key]=c.check[key]||[null,null,null,null,null];a[Number(el.dataset.q)]=el.dataset.v==="1";save("profile");render(true)},
+  dxopen(){dxOpen()},
   day(el){const v=Number(el.dataset.v);ui.date=v===0?todayKey():keyOf(addDays(parseKey(ui.date),v));ui.open=null;render(true)},
   tap(el){const id=el.dataset.id,now=Date.now();if(TAP.id===id&&now-TAP.t<340){clearTimeout(TAP.timer);TAP.id=null;openMod(id);return}TAP.id=id;TAP.t=now;clearTimeout(TAP.timer);TAP.timer=setTimeout(()=>{TAP.id=null;toggleDone(id)},340)},
   modclose(){closeMod()},
